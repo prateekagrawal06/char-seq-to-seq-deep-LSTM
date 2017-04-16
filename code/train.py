@@ -15,7 +15,7 @@ def getData(fileDir):
 		a[uniqueCharToInt[s]] = 1
 		data.append(a)
 	data = np.array(data)
-	#data = data[:100000]
+	data = data[:10000]
 	return data, uniqueCharToInt, intToUniqueChar,unique_char
 
 data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
@@ -25,14 +25,16 @@ print uniqueCharToInt
 print unique_char
 
 
-
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
+saveIteration = 500
 nHiddenUnits = 512
 lr = .001
 nSteps = 128
-clipValue = 5
+clipValue = 10
 
+print "learning rate : ", lr
+print "no of sequesnce : " , nSteps
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 y = tf.placeholder(tf.float32,[None,nOutputs])
@@ -155,7 +157,7 @@ with tf.Session() as sess:
 			j += 1
 			i += 1
 
-			if j % 10 == 0 :
+			if j % saveIteration == 0 :
 				save_path = saver.save(sess, "../hidden_1/model_checkpoint/save_net.ckpt")
 				pickle.dump(cPrevSess,cPrevFile)
 				pickle.dump(hPrevSess,hPrevFile)
