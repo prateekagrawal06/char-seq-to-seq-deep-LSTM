@@ -26,8 +26,8 @@ nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
-#n_epoch = 2
-nSteps = 5
+nSteps = 25
+clipValue = 5
 
 
 x = tf.placeholder(tf.float32,[None,nInputs])
@@ -168,7 +168,7 @@ loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, 
 
 optimizer = tf.train.AdamOptimizer(lr)
 dVar = optimizer.compute_gradients(loss)
-dVarClipped = [(tf.clip_by_value(grad, -10.,10.), var) for grad, var in dVar]
+dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
 train = optimizer.apply_gradients(dVarClipped)
 
 
