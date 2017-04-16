@@ -1,10 +1,10 @@
-import tensorflow as tf 
+import tensorflow as tf
 import numpy as np 
 import pickle
 
 
 def getData(fileDir):
-	text = "This is the project for NLP class from Anshul gupta and prateek Agrawal"
+	text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
 	unique_char = set(text)
 	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
 	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}

@@ -5,7 +5,7 @@ import pickle
 def getData(fileDir):
 	#with open (fileDir, "r") as myfile:
 	    #text=myfile.read()
-	text = "This is the project for NLP class from Anshul gupta and prateek Agrawal"
+	text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
 	unique_char = set(text)
 	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
 	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
@@ -27,7 +27,7 @@ nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
 #n_epoch = 2
-nSteps = 10
+nSteps = 5
 
 
 x = tf.placeholder(tf.float32,[None,nInputs])
@@ -128,8 +128,8 @@ loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, 
 
 optimizer = tf.train.AdamOptimizer(lr)
 dVar = optimizer.compute_gradients(loss)
-#dVarClipped = [(tf.clip_by_value(grad, -20., 20.), var) for grad, var in dVar]
-train = optimizer.apply_gradients(dVar)
+dVarClipped = [(tf.clip_by_value(grad, -5.,5.), var) for grad, var in dVar]
+train = optimizer.apply_gradients(dVarClipped)
 
 
 saver = tf.train.Saver()
