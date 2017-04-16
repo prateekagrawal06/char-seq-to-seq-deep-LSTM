@@ -3,9 +3,9 @@ import numpy as np
 import pickle
 #import matplotlib.pyplot as plt
 def getData(fileDir):
-	#with open (fileDir, "r") as myfile:
-	    #text=myfile.read()
-	text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
+	with open(fileDir, "rb") as myfile:
+	    text=myfile.read()
+	#text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
 	unique_char = set(text)
 	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
 	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
@@ -15,30 +15,26 @@ def getData(fileDir):
 		a[uniqueCharToInt[s]] = 1
 		data.append(a)
 	data = np.array(data)
-	#data = data[:1000]
+	#data = data[:100000]
 	return data, uniqueCharToInt, intToUniqueChar,unique_char
 
-data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input.txt")
+data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
 print data.shape
 print "No. of unique characters: ", len(unique_char)
+print uniqueCharToInt
+print unique_char
+
 
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
-#n_epoch = 2
-nSteps = 5
+nSteps = 128
+clipValue = 5
 
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 y = tf.placeholder(tf.float32,[None,nOutputs])
-
-
-#cStates = list()
-#hStates = list()
-
-#hPrev = tf.Variable(initial_value = tf.zeros(shape = [nHiddenUnits,]), trainable = False, name = "hiddenPrevious")
-#cPrev = tf.Variable(initial_value = tf.zeros(shape = [nHiddenUnits,]), trainable = False, name = "statePrevious")
 
 hPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
@@ -152,7 +148,7 @@ loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, 
 
 optimizer = tf.train.AdamOptimizer(lr)
 dVar = optimizer.compute_gradients(loss)
-dVarClipped = [(tf.clip_by_value(grad, -10.,10.), var) for grad, var in dVar]
+dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
 train = optimizer.apply_gradients(dVarClipped)
 
 
@@ -203,44 +199,6 @@ with tf.Session() as sess:
 			epoch_loss = 0
 
 
-
-'''
-saver = tf.train.Saver()
-lossFile = open('../hidden_1/lossList.txt','w')
-
-with tf.Session() as sess:
-	init = tf.global_variables_initializer()
-	sess.run(init)
-	cPrevSess = np.zeros(shape = [nHiddenUnits,1])
-	hPrevSess = np.zeros(shape = [nHiddenUnits,1])
-	for epoch in range(n_epoch):		
-		epoch_loss = 0
-		print "epoch : ",epoch
-		for steps in range(int(data.shape[0]/nSteps)):			
-			#if steps % 10 == 0 :
-			print "step : ", steps
-			if (nSteps*(1 + steps) + 1) <= data.shape[0]:
-
-				batch_x = data[(steps*nSteps) : (nSteps*(1 + steps)), 0:nInputs]
-				batch_y = data[(steps*nSteps + 1) : (nSteps*(1 + steps) + 1), 0:nInputs]
-				print cPrevSess
-				_, batch_loss, cPrevSess, hPrevSess =  sess.run([train,loss,cPrevBatch,hPrevBatch],{x : batch_x, y : batch_y, cPrev : cPrevSess, hPrev : hPrevSess})			
-				print cPrevSess
-				epoch_loss += batch_loss
-			else:
-				break
-
-
-		print 'epoch_loss : ', epoch_loss
-		lossFile.write("%s\n" % epoch_loss)
-		#print sess.run(hPrev)
-
-
-		if epoch % 10 == 0:
-			save_path = saver.save(sess, "../hidden_1/model_checkpoint/save_net.ckpt")
-			print "model saved"
-
-'''
 
 
 

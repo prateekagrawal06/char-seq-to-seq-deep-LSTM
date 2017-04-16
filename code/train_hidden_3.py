@@ -3,9 +3,9 @@ import numpy as np
 import pickle
 #import matplotlib.pyplot as plt
 def getData(fileDir):
-	#with open (fileDir, "r") as myfile:
-	    #text=myfile.read()
-	text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
+	with open(fileDir, "rb") as myfile:
+	    text=myfile.read()
+	#text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
 	unique_char = set(text)
 	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
 	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
@@ -15,18 +15,20 @@ def getData(fileDir):
 		a[uniqueCharToInt[s]] = 1
 		data.append(a)
 	data = np.array(data)
-	#data = data[:1000]
+	#data = data[:100000]
 	return data, uniqueCharToInt, intToUniqueChar,unique_char
 
-data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input.txt")
+data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
 print data.shape
 print "No. of unique characters: ", len(unique_char)
+print uniqueCharToInt
+print unique_char
 
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
-nSteps = 25
+nSteps = 128
 clipValue = 5
 
 
