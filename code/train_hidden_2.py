@@ -76,7 +76,7 @@ biases = {
     'o1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso1'),
     'g1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg1'),
 
-    'hh' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg'),
+    'hh' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseshh'),
 
     'i2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi2'),
     'f2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf2'),
