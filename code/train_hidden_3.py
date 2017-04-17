@@ -24,9 +24,9 @@ print unique_char
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
-lr = .0001
+lr = .001
 nSteps = 128
-clipValue = 'NA'
+clipValue = 100
 
 print "learning rate : ", lr
 print "no of sequence : " , nSteps
@@ -75,30 +75,30 @@ weights = {
 }
 biases = {
     # (nHiddenUnits1, )
-    'input': tf.Variable(tf.constant(0.01, shape=[nHiddenUnits, ]),name = 'biasesIn'),
+    'input': tf.Variable(tf.constant(0.0, shape=[nHiddenUnits, ]),name = 'biasesIn'),
 
-    'i1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi1'),
-    'f1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf1'),
-    'o1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso1'),
-    'g1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg1'),
+    'i1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesi1'),
+    'f1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf1'),
+    'o1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso1'),
+    'g1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg1'),
 
-    'hh' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseshh'),
+    'hh' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseshh'),
 
-    'i2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi2'),
-    'f2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf2'),
-    'o2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso2'),
-    'g2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg2'),    
+    'i2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesi2'),
+    'f2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf2'),
+    'o2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso2'),
+    'g2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg2'),    
 
-    'hhh' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseshhh'),
+    'hhh' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseshhh'),
 
-    'i3' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi3'),
-    'f3' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf3'),
-    'o3' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso3'),
-    'g3' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg3'),    
+    'i3' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesi3'),
+    'f3' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf3'),
+    'o3' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso3'),
+    'g3' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg3'),    
 
 
     # (nOutputs, )
-    'output': tf.Variable(tf.constant(0.01, shape=[nOutputs, ]), name = 'biasesOut')
+    'output': tf.Variable(tf.constant(0.0, shape=[nOutputs, ]), name = 'biasesOut')
 }
 
 
@@ -169,8 +169,8 @@ loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, 
 
 optimizer = tf.train.AdamOptimizer(lr)
 dVar = optimizer.compute_gradients(loss)
-#dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
-train = optimizer.apply_gradients(dVar)
+dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
+train = optimizer.apply_gradients(dVarClipped)
 
 
 saver = tf.train.Saver()
@@ -186,14 +186,14 @@ with tf.Session() as sess:
 	i = 0
 	j = 0
 	epoch_loss = 0
-	batchLossFile = open("../hidden_3_lr_0.0001_clip_NA_step_128/batchLossFile.txt","w")
-	epochLossFile = open("../hidden_3_lr_0.0001_clip_NA_step_128/epochLossFile.txt","w")
-	cPrev1File = open("../hidden_3_lr_0.0001_clip_NA_step_128/cPrev1.pickle",'w')
-	hPrev1File = open("../hidden_3_lr_0.0001_clip_NA_step_128/hPrev1.pickle",'w')
-	cPrev2File = open("../hidden_3_lr_0.0001_clip_NA_step_128/cPrev2.pickle",'w')
-	hPrev2File = open("../hidden_3_lr_0.0001_clip_NA_step_128/hPrev2.pickle",'w')
-	cPrev3File = open("../hidden_3_lr_0.0001_clip_NA_step_128/cPrev3.pickle",'w')
-	hPrev3File = open("../hidden_3_lr_0.0001_clip_NA_step_128/hPrev3.pickle",'w')
+	batchLossFile = open("../hidden_3_lr_0.001_clip_100_step_128/batchLossFile.txt","w")
+	epochLossFile = open("../hidden_3_lr_0.001_clip_100_step_128/epochLossFile.txt","w")
+	cPrev1File = open("../hidden_3_lr_0.001_clip_100_step_128/cPrev1.pickle",'w')
+	hPrev1File = open("../hidden_3_lr_0.001_clip_100_step_128/hPrev1.pickle",'w')
+	cPrev2File = open("../hidden_3_lr_0.001_clip_100_step_128/cPrev2.pickle",'w')
+	hPrev2File = open("../hidden_3_lr_0.001_clip_100_step_128/hPrev2.pickle",'w')
+	cPrev3File = open("../hidden_3_lr_0.001_clip_100_step_128/cPrev3.pickle",'w')
+	hPrev3File = open("../hidden_3_lr_0.001_clip_100_step_128/hPrev3.pickle",'w')
 	while True:
 		print "Iteration : ", j
 
@@ -227,7 +227,7 @@ with tf.Session() as sess:
 			i += 1
 
 			if j % 100 == 0 :
-				save_path = saver.save(sess, "../hidden_3_lr_0.0001_clip_NA_step_128/model_checkpoint/save_net.ckpt")
+				save_path = saver.save(sess, "../hidden_3_lr_0.001_clip_100_step_128/model_checkpoint/save_net.ckpt")
 				pickle.dump(cPrev1Sess,cPrev1File)
 				pickle.dump(hPrev1Sess,hPrev1File)
 				pickle.dump(cPrev2Sess,cPrev2File)
