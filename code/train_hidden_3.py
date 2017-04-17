@@ -2,17 +2,19 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-def getData(fileDir):
-	with open(fileDir, "rb") as myfile:
-	    text=myfile.read()
-	text = text[347:500000]
-	unique_char = set(text)
-	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
-	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
-	return text,uniqueCharToInt, intToUniqueChar,unique_char
+with open("../data/processedData.pickle",'r') as pd:
+	text = pickle.load(pd)
+
+with open("../data/uniqueChar.pickle",'r') as uc:
+	unique_char = pickle.load(uc)
+
+with open("../data/uniqueCharToInt.pickle",'r') as uc1:
+	uniqueCharToInt = pickle.load(uc1)
+
+with open("../data/intToUniqueChar.pickle",'r') as uc2:
+	intToUniqueChar = pickle.load(uc2)
 
 
-text, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
 print len(text)
 print "No. of unique characters: ", len(unique_char)
 print uniqueCharToInt
@@ -22,9 +24,9 @@ print unique_char
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
-lr = .001
+lr = .0001
 nSteps = 128
-clipValue = 10
+#clipValue = 10
 
 print "learning rate : ", lr
 print "no of sequence : " , nSteps
@@ -167,8 +169,8 @@ loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, 
 
 optimizer = tf.train.AdamOptimizer(lr)
 dVar = optimizer.compute_gradients(loss)
-dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
-train = optimizer.apply_gradients(dVarClipped)
+#dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
+train = optimizer.apply_gradients(dVar)
 
 
 saver = tf.train.Saver()
@@ -184,14 +186,14 @@ with tf.Session() as sess:
 	i = 0
 	j = 0
 	epoch_loss = 0
-	batchLossFile = open("../hidden_3/batchLossFile.txt","w")
-	epochLossFile = open("../hidden_3/epochLossFile.txt","w")
-	cPrev1File = open("../hidden_3/cPrev1.pickle",'w')
-	hPrev1File = open("../hidden_3/hPrev1.pickle",'w')
-	cPrev2File = open("../hidden_3/cPrev2.pickle",'w')
-	hPrev2File = open("../hidden_3/hPrev2.pickle",'w')
-	cPrev3File = open("../hidden_3/cPrev3.pickle",'w')
-	hPrev3File = open("../hidden_3/hPrev3.pickle",'w')
+	batchLossFile = open("../hidden_3_lr_0.0001_clip_NA_step_128/batchLossFile.txt","w")
+	epochLossFile = open("../hidden_3_lr_0.0001_clip_NA_step_128/epochLossFile.txt","w")
+	cPrev1File = open("../hidden_3_lr_0.0001_clip_NA_step_128/cPrev1.pickle",'w')
+	hPrev1File = open("../hidden_3_lr_0.0001_clip_NA_step_128/hPrev1.pickle",'w')
+	cPrev2File = open("../hidden_3_lr_0.0001_clip_NA_step_128/cPrev2.pickle",'w')
+	hPrev2File = open("../hidden_3_lr_0.0001_clip_NA_step_128/hPrev2.pickle",'w')
+	cPrev3File = open("../hidden_3_lr_0.0001_clip_NA_step_128/cPrev3.pickle",'w')
+	hPrev3File = open("../hidden_3_lr_0.0001_clip_NA_step_128/hPrev3.pickle",'w')
 	while True:
 		print "Iteration : ", j
 
@@ -225,7 +227,7 @@ with tf.Session() as sess:
 			i += 1
 
 			if j % 100 == 0 :
-				save_path = saver.save(sess, "../hidden_3/model_checkpoint/save_net.ckpt")
+				save_path = saver.save(sess, "../hidden_3_lr_0.0001_clip_NA_step_128/model_checkpoint/save_net.ckpt")
 				pickle.dump(cPrev1Sess,cPrev1File)
 				pickle.dump(hPrev1Sess,hPrev1File)
 				pickle.dump(cPrev2Sess,cPrev2File)

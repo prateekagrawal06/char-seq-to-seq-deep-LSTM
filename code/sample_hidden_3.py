@@ -3,16 +3,18 @@ import numpy as np
 import pickle
 
 
-def getData(fileDir):
-	with open(fileDir, "rb") as myfile:
-	    text=myfile.read()
-	text = text[347:500000]
-	unique_char = set(text)
-	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
-	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
-	return text,uniqueCharToInt, intToUniqueChar,unique_char
+with open("../data/processedData.pickle",'r') as pd:
+	text = pickle.load(pd)
 
-text, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
+with open("../data/uniqueChar.pickle",'r') as uc:
+	unique_char = pickle.load(uc)
+
+with open("../data/uniqueCharToInt.pickle",'r') as uc1:
+	uniqueCharToInt = pickle.load(uc1)
+
+with open("../data/intToUniqueChar.pickle",'r') as uc2:
+	intToUniqueChar = pickle.load(uc2)
+
 print len(text)
 print "No. of unique characters: ", len(unique_char)
 print uniqueCharToInt
@@ -158,32 +160,33 @@ results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	saver.restore(sess,"../hidden_3/model_checkpoint/save_net.ckpt")
+	saver.restore(sess,"../hidden_3_lr_0.001_clip_10_step_128/model_checkpoint/save_net.ckpt")
 	print "Model Restored"
-	with open("../hidden_3/cPrev1.pickle","r") as c1:
+	with open("../hidden_3_lr_0.001_clip_10_step_128/cPrev1.pickle","r") as c1:
 		cPrev1Sess = pickle.load(c1)
-	with open("../hidden_3/hPrev1.pickle","r") as h1:
+	with open("../hidden_3_lr_0.001_clip_10_step_128/hPrev1.pickle","r") as h1:
 		hPrev1Sess = pickle.load(h1)
-	with open("../hidden_3/cPrev2.pickle","r") as c2:
+	with open("../hidden_3_lr_0.001_clip_10_step_128/cPrev2.pickle","r") as c2:
 		cPrev2Sess = pickle.load(c2)
-	with open("../hidden_3/hPrev2.pickle","r") as h2:
+	with open("../hidden_3_lr_0.001_clip_10_step_128/hPrev2.pickle","r") as h2:
 		hPrev2Sess = pickle.load(h2)
-	with open("../hidden_3/cPrev3.pickle","r") as c3:
+	with open("../hidden_3_lr_0.001_clip_10_step_128/cPrev3.pickle","r") as c3:
 		cPrev3Sess = pickle.load(c3)
-	with open("../hidden_3/hPrev3.pickle","r") as h3:
+	with open("../hidden_3_lr_0.001_clip_10_step_128/hPrev3.pickle","r") as h3:
 		hPrev3Sess = pickle.load(h3)
 
 	char = []
 	startChar = np.zeros(shape = [1,nInputs])
 	startChar[0,5] = 1
 
-	for i in range(10000):
+	for i in range(1000):
 		nextCharProb,cPrev3Sess, hPrev3Sess, cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results, cPrev3Batch,hPrev3Batch, cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : startChar,cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess,cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
-		startChar = np.zeros(shape = [1,nInputs])
-		startChar[0,nextCharIndex] = 1
 		char.append(nextChar)
+		startChar = np.zeros(shape = [1,nInputs])
+		startChar[0,uniqueCharToInt[nextChar]] = 1
+		
 	print "text sampled"
 	print "".join(char)
 
