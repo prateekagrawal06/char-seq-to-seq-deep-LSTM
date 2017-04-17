@@ -1,27 +1,22 @@
 import tensorflow as tf
 import numpy as np
 import pickle
-#import matplotlib.pyplot as plt
+
 def getData(fileDir):
 	with open(fileDir, "rb") as myfile:
 	    text=myfile.read()
-	#text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
+	text = text[347:1500]
 	unique_char = set(text)
 	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
 	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
-	data = []
-	for s in text:
-		a = np.zeros(shape=[len(unique_char)])
-		a[uniqueCharToInt[s]] = 1
-		data.append(a)
-	data = np.array(data)
-	#data = data[:100000]
-	return data, uniqueCharToInt, intToUniqueChar,unique_char
+	return text,uniqueCharToInt, intToUniqueChar,unique_char
 
-data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
-print data.shape
+
+text, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
+print len(text)
 print "No. of unique characters: ", len(unique_char)
 print uniqueCharToInt
+print intToUniqueChar
 print unique_char
 
 nOutputs = len(unique_char)
@@ -29,7 +24,7 @@ nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
 nSteps = 128
-clipValue = 5
+clipValue = 10
 
 
 x = tf.placeholder(tf.float32,[None,nInputs])
@@ -144,8 +139,7 @@ def unroll_LSTM(x, cPrev, hPrev,layer):
 
 		cPrev = cCurrent
 		hPrev = hCurrent
-		
-		
+
 	return tf.reshape(hStates,[nSteps,nHiddenUnits]),tf.reshape(cPrev,[nHiddenUnits,1]),tf.reshape(hPrev,[nHiddenUnits,1])
 
 x = tf.reshape(x,[-1,nInputs])
@@ -197,9 +191,29 @@ with tf.Session() as sess:
 	hPrev3File = open("../hidden_3/hPrev3.pickle",'w')
 	while True:
 		print "Iteration : ", j
-		if (nSteps*(1 + i) + 1) <= data.shape[0]:
-			batch_x = data[(i*nSteps) : (nSteps*(1 + i)), 0:nInputs]
-			batch_y = data[(i*nSteps + 1) : (nSteps*(1 + i) + 1), 0:nInputs]
+
+		if (nSteps*(1 + i) + 1) <= len(text):
+
+			text_x = text[(i*nSteps) : (nSteps*(1 + i))]
+			text_y = text[(i*nSteps + 1) : (nSteps*(1 + i) + 1)]
+
+			batch_x = []
+			for s in text_x:
+				a = np.zeros(shape=[len(unique_char)])
+				a[uniqueCharToInt[s]] = 1
+				batch_x.append(a)
+			batch_x = np.array(batch_x)
+
+			batch_y = []
+			for s in text_y:
+				a = np.zeros(shape=[len(unique_char)])
+				a[uniqueCharToInt[s]] = 1
+				batch_y.append(a)
+			batch_y = np.array(batch_y)
+
+			print batch_x.shape
+			print batch_y.shape
+			
 			_, batch_loss, cPrev3Sess, hPrev3Sess,cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess =  sess.run([train,loss,cPrev3Batch,hPrev3Batch,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess})			
 			print "loss : ", batch_loss
 			batchLossFile.write("%s\n" % batch_loss)
@@ -207,7 +221,7 @@ with tf.Session() as sess:
 			j += 1
 			i += 1
 
-			if j % 10 == 0 :
+			if j % 100 == 0 :
 				save_path = saver.save(sess, "../hidden_3/model_checkpoint/save_net.ckpt")
 				pickle.dump(cPrev1Sess,cPrev1File)
 				pickle.dump(hPrev1Sess,hPrev1File)
@@ -225,15 +239,5 @@ with tf.Session() as sess:
 			epochLossFile.write("%s\n" % epoch_loss)
 			i = 0
 			epoch_loss = 0
-
-
-		
-				
-	
-	
-
-
-
-
 
 

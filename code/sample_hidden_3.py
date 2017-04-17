@@ -6,30 +6,23 @@ import pickle
 def getData(fileDir):
 	with open(fileDir, "rb") as myfile:
 	    text=myfile.read()
-	#text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
+	text = text[347:1500]
 	unique_char = set(text)
 	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
 	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
-	data = []
-	for s in text:
-		a = np.zeros(shape=[len(unique_char)])
-		a[uniqueCharToInt[s]] = 1
-		data.append(a)
-	data = np.array(data)
-	#data = data[:100000]
-	return data, uniqueCharToInt, intToUniqueChar,unique_char
+	return text,uniqueCharToInt, intToUniqueChar,unique_char
 
-data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
-print data.shape
+text, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
+print len(text)
 print "No. of unique characters: ", len(unique_char)
 print uniqueCharToInt
+print intToUniqueChar
 print unique_char
 
-
-nSteps = 1
+nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
-nOutputs = len(unique_char)
+nSteps = 1
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 
