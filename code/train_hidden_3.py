@@ -5,7 +5,7 @@ import pickle
 def getData(fileDir):
 	with open(fileDir, "rb") as myfile:
 	    text=myfile.read()
-	text = text[347:1500]
+	text = text[347:500000]
 	unique_char = set(text)
 	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
 	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
@@ -26,6 +26,9 @@ lr = .001
 nSteps = 128
 clipValue = 10
 
+print "learning rate : ", lr
+print "no of sequence : " , nSteps
+print "clipping value : " , clipValue
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 y = tf.placeholder(tf.float32,[None,nOutputs])
@@ -211,8 +214,8 @@ with tf.Session() as sess:
 				batch_y.append(a)
 			batch_y = np.array(batch_y)
 
-			print batch_x.shape
-			print batch_y.shape
+			#print batch_x.shape
+			#print batch_y.shape
 			
 			_, batch_loss, cPrev3Sess, hPrev3Sess,cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess =  sess.run([train,loss,cPrev3Batch,hPrev3Batch,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess})			
 			print "loss : ", batch_loss

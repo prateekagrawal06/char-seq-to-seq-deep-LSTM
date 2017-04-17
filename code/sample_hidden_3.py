@@ -6,7 +6,7 @@ import pickle
 def getData(fileDir):
 	with open(fileDir, "rb") as myfile:
 	    text=myfile.read()
-	text = text[347:1500]
+	text = text[347:500000]
 	unique_char = set(text)
 	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
 	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
@@ -177,7 +177,7 @@ with tf.Session() as sess:
 	startChar = np.zeros(shape = [1,nInputs])
 	startChar[0,5] = 1
 
-	for i in range(200):
+	for i in range(10000):
 		nextCharProb,cPrev3Sess, hPrev3Sess, cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results, cPrev3Batch,hPrev3Batch, cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : startChar,cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess,cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
