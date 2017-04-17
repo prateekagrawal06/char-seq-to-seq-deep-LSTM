@@ -26,7 +26,7 @@ nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .0001
 nSteps = 128
-#clipValue = 10
+clipValue = 'NA'
 
 print "learning rate : ", lr
 print "no of sequence : " , nSteps
