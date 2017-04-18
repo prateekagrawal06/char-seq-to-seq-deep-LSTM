@@ -160,7 +160,7 @@ results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	saver.restore(sess,"../hidden_3_lr_0.001_clip_100_step_128/model_checkpoint/save_net.ckpt")
+	saver.restore(sess,"../hidden_3_lr_0.001_clip_100_steps_128/model_checkpoint/save_net.ckpt")
 	print "Model Restored"
 	#with open("../hidden_3_lr_0.001_clip_100_step_128/cPrev1.pickle","r") as c1:
 		#cPrev1Sess = pickle.load(c1)
@@ -170,9 +170,9 @@ with tf.Session() as sess:
 		#cPrev2Sess = pickle.load(c2)
 	#with open("../hidden_3_lr_0.001_clip_100_step_128/hPrev2.pickle","r") as h2:
 		#hPrev2Sess = pickle.load(h2)
-	with open("../hidden_3_lr_0.001_clip_100_step_128/cPrev3.pickle","r") as c3:
+	with open("../hidden_3_lr_0.001_clip_100_steps_128/cPrev3.pickle","r") as c3:
 		cPrev3Sess = pickle.load(c3)
-	with open("../hidden_3_lr_0.001_clip_100_step_128/hPrev3.pickle","r") as h3:
+	with open("../hidden_3_lr_0.001_clip_100_steps_128/hPrev3.pickle","r") as h3:
 		hPrev3Sess = pickle.load(h3)
 
 	char = []

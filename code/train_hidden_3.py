@@ -185,14 +185,14 @@ with tf.Session() as sess:
 	i = 0
 	j = 0
 	epoch_loss = 0
-	batchLossFile = open("../hidden_3_lr_0.001_clip_100_step_128/batchLossFile.txt","w")
-	epochLossFile = open("../hidden_3_lr_0.001_clip_100_step_128/epochLossFile.txt","w")
+	batchLossFile = open("../hidden_3_lr_0.001_clip_100_steps_128/batchLossFile.txt","w")
+	epochLossFile = open("../hidden_3_lr_0.001_clip_100_steps_128/epochLossFile.txt","w")
 	#cPrev1File = open("../hidden_3_lr_0.001_clip_100_step_128/cPrev1.pickle",'w')
 	#hPrev1File = open("../hidden_3_lr_0.001_clip_100_step_128/hPrev1.pickle",'w')
 	#cPrev2File = open("../hidden_3_lr_0.001_clip_100_step_128/cPrev2.pickle",'w')
 	#hPrev2File = open("../hidden_3_lr_0.001_clip_100_step_128/hPrev2.pickle",'w')
-	cPrev3File = open("../hidden_3_lr_0.001_clip_100_step_128/cPrev3.pickle",'w')
-	hPrev3File = open("../hidden_3_lr_0.001_clip_100_step_128/hPrev3.pickle",'w')
+	cPrev3File = open("../hidden_3_lr_0.001_clip_100_steps_128/cPrev3.pickle",'w')
+	hPrev3File = open("../hidden_3_lr_0.001_clip_100_steps_128/hPrev3.pickle",'w')
 	while True:
 		print "Iteration : ", j
 
@@ -228,7 +228,7 @@ with tf.Session() as sess:
 			i += 1
 
 			if j % 100 == 0 :
-				save_path = saver.save(sess, "../hidden_3_lr_0.001_clip_100_step_128/model_checkpoint/save_net.ckpt")
+				save_path = saver.save(sess, "../hidden_3_lr_0.001_clip_100_steps_128/model_checkpoint/save_net.ckpt")
 				#pickle.dump(cPrev1Sess,cPrev1File)
 				#pickle.dump(hPrev1Sess,hPrev1File)
 				#pickle.dump(cPrev2Sess,cPrev2File)
