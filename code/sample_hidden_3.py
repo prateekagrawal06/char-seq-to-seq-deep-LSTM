@@ -66,30 +66,30 @@ weights = {
 }
 biases = {
     # (nHiddenUnits1, )
-    'input': tf.Variable(tf.constant(0.01, shape=[nHiddenUnits, ]),name = 'biasesIn'),
+    'input': tf.Variable(tf.constant(0.0, shape=[nHiddenUnits, ]),name = 'biasesIn'),
 
-    'i1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi1'),
-    'f1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf1'),
-    'o1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso1'),
-    'g1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg1'),
+    'i1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesi1'),
+    'f1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesf1'),
+    'o1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biaseso1'),
+    'g1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesg1'),
 
-    'hh' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseshh'),
+    'hh' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseshh'),
 
-    'i2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi2'),
-    'f2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf2'),
-    'o2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso2'),
-    'g2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg2'),    
+    'i2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesi2'),
+    'f2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf2'),
+    'o2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso2'),
+    'g2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg2'),    
 
-    'hhh' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseshhh'),
+    'hhh' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseshhh'),
 
-    'i3' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi3'),
-    'f3' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf3'),
-    'o3' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso3'),
-    'g3' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg3'),    
+    'i3' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesi3'),
+    'f3' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf3'),
+    'o3' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso3'),
+    'g3' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg3'),    
 
 
     # (nOutputs, )
-    'output': tf.Variable(tf.constant(0.01, shape=[nOutputs, ]), name = 'biasesOut')
+    'output': tf.Variable(tf.constant(0.0, shape=[nOutputs, ]), name = 'biasesOut')
 }
 
 

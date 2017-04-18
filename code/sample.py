@@ -2,26 +2,23 @@ import tensorflow as tf
 import numpy as np 
 import pickle
 
-def getData(fileDir):
-	with open(fileDir, "rb") as myfile:
-	    text=myfile.read()
-	#text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
-	unique_char = set(text)
-	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
-	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
-	data = []
-	for s in text:
-		a = np.zeros(shape=[len(unique_char)])
-		a[uniqueCharToInt[s]] = 1
-		data.append(a)
-	data = np.array(data)
-	#data = data[:100000]
-	return data, uniqueCharToInt, intToUniqueChar,unique_char
 
-data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
-print data.shape
+with open("../data/processedData.pickle",'r') as pd:
+	text = pickle.load(pd)
+
+with open("../data/uniqueChar.pickle",'r') as uc:
+	unique_char = pickle.load(uc)
+
+with open("../data/uniqueCharToInt.pickle",'r') as uc1:
+	uniqueCharToInt = pickle.load(uc1)
+
+with open("../data/intToUniqueChar.pickle",'r') as uc2:
+	intToUniqueChar = pickle.load(uc2)
+
+print len(text)
 print "No. of unique characters: ", len(unique_char)
 print uniqueCharToInt
+print intToUniqueChar
 print unique_char
 
 nSteps = 1
@@ -30,11 +27,10 @@ nHiddenUnits = 512
 nOutputs = len(unique_char)
 
 x = tf.placeholder(tf.float32,[None,nInputs])
-#hPrev = tf.Variable(initial_value = tf.zeros(shape = [nHiddenUnits,]), trainable = True, name = "hiddenPrevious")
-#cPrev = tf.Variable(initial_value = tf.zeros(shape = [nHiddenUnits,]), trainable = True, name = "statePrevious")
 
 hPrev = tf.placeholder(tf.float32,[nHiddenUnits,1])
 cPrev = tf.placeholder(tf.float32,[nHiddenUnits,1])
+
 weights = {
     # (nInputs, nHiddenUnit1)
     'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn'),
@@ -48,15 +44,15 @@ weights = {
 }
 biases = {
     # (nHiddenUnits1, )
-    'input': tf.Variable(tf.constant(0.1, shape=[nHiddenUnits, ]),name = 'biasesIn'),
+    'input': tf.Variable(tf.constant(0.0, shape=[nHiddenUnits, ]),name = 'biasesIn'),
 
-    'i' : tf.Variable(tf.random_normal(shape=[nHiddenUnits, ]), name = 'biasesi'),
-    'f' : tf.Variable(tf.random_normal(shape=[nHiddenUnits, ]), name = 'biasesf'),
-    'o' : tf.Variable(tf.random_normal(shape=[nHiddenUnits, ]), name = 'biaseso'),
-    'g' : tf.Variable(tf.random_normal(shape=[nHiddenUnits, ]), name = 'biasesg'),
+    'i' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesi'),
+    'f' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf'),
+    'o' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso'),
+    'g' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg'),
 
     # (nOutputs, )
-    'output': tf.Variable(tf.constant(0.1, shape=[nOutputs, ]), name = 'biasesOut')
+    'output': tf.Variable(tf.constant(0.0, shape=[nOutputs, ]), name = 'biasesOut')
 }
 
 
@@ -113,11 +109,11 @@ results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	saver.restore(sess,"../hidden_1/model_checkpoint/save_net.ckpt")
+	saver.restore(sess,"../hidden_1_lr_0.001_clip_100_steps_128/model_checkpoint/save_net.ckpt")
 	print "Model Restored"
-	with open("../hidden_1/cPrev.pickle","r") as c:
+	with open("../hidden_1_lr_0.001_clip_100_steps_128/cPrev.pickle","r") as c:
 		cPrevSess = pickle.load(c)
-	with open("../hidden_1/hPrev.pickle","r") as h:
+	with open("../hidden_1_lr_0.001_clip_100_steps_128/hPrev.pickle","r") as h:
 		hPrevSess = pickle.load(h)
 
 	char = []
@@ -128,9 +124,9 @@ with tf.Session() as sess:
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : startChar, cPrev : cPrevSess, hPrev : hPrevSess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
-		startChar = np.zeros(shape = [1,nInputs])
-		startChar[0,nextCharIndex] = 1
 		char.append(nextChar)
+		startChar = np.zeros(shape = [1,nInputs])
+		startChar[0,nextCharIndex] = 1		
 	print "text sampled"
 	print "".join(char)
 

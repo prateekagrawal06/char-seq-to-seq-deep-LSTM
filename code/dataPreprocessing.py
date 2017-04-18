@@ -1,12 +1,13 @@
 import pickle
 with open("../data/input_william.rtf", "rb") as myfile:
 	    text=myfile.read()
-text = text[347:500000]
+text = text[347:]
 unique_char = set(text)
 uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
 intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
 
 print len(text)
+print len(unique_char)
 print unique_char
 print uniqueCharToInt
 print intToUniqueChar

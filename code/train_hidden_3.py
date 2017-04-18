@@ -14,7 +14,6 @@ with open("../data/uniqueCharToInt.pickle",'r') as uc1:
 with open("../data/intToUniqueChar.pickle",'r') as uc2:
 	intToUniqueChar = pickle.load(uc2)
 
-
 print len(text)
 print "No. of unique characters: ", len(unique_char)
 print uniqueCharToInt

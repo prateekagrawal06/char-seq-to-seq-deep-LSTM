@@ -1,40 +1,35 @@
 import tensorflow as tf
 import numpy as np
 import pickle
-#import matplotlib.pyplot as plt
-def getData(fileDir):
-	with open(fileDir, "rb") as myfile:
-	    text=myfile.read()
-	#text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
-	unique_char = set(text)
-	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
-	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
-	data = []
-	for s in text:
-		a = np.zeros(shape=[len(unique_char)])
-		a[uniqueCharToInt[s]] = 1
-		data.append(a)
-	data = np.array(data)
-	data = data[:10000]
-	return data, uniqueCharToInt, intToUniqueChar,unique_char
 
-data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
-print data.shape
+with open("../data/processedData.pickle",'r') as pd:
+	text = pickle.load(pd)
+
+with open("../data/uniqueChar.pickle",'r') as uc:
+	unique_char = pickle.load(uc)
+
+with open("../data/uniqueCharToInt.pickle",'r') as uc1:
+	uniqueCharToInt = pickle.load(uc1)
+
+with open("../data/intToUniqueChar.pickle",'r') as uc2:
+	intToUniqueChar = pickle.load(uc2)
+
+print len(text)
 print "No. of unique characters: ", len(unique_char)
 print uniqueCharToInt
+print intToUniqueChar
 print unique_char
-
 
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
-saveIteration = 500
 nHiddenUnits = 512
 lr = .001
 nSteps = 128
-clipValue = 10
+clipValue = 100
 
 print "learning rate : ", lr
 print "no of sequesnce : " , nSteps
+print "clipping value : " , clipValue
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 y = tf.placeholder(tf.float32,[None,nOutputs])
@@ -57,15 +52,15 @@ weights = {
 }
 biases = {
     # (nHiddenUnits1, )
-    'input': tf.Variable(tf.constant(0.1, shape=[nHiddenUnits, ]),name = 'biasesIn'),
+    'input': tf.Variable(tf.constant(0.0, shape=[nHiddenUnits, ]),name = 'biasesIn'),
 
-    'i' : tf.Variable(tf.random_normal(shape=[nHiddenUnits, ]), name = 'biasesi'),
-    'f' : tf.Variable(tf.random_normal(shape=[nHiddenUnits, ]), name = 'biasesf'),
-    'o' : tf.Variable(tf.random_normal(shape=[nHiddenUnits, ]), name = 'biaseso'),
-    'g' : tf.Variable(tf.random_normal(shape=[nHiddenUnits, ]), name = 'biasesg'),
+    'i' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesi'),
+    'f' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf'),
+    'o' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso'),
+    'g' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg'),
 
     # (nOutputs, )
-    'output': tf.Variable(tf.constant(0.1, shape=[nOutputs, ]), name = 'biasesOut')
+    'output': tf.Variable(tf.constant(0.0, shape=[nOutputs, ]), name = 'biasesOut')
 }
 
 
@@ -141,15 +136,29 @@ with tf.Session() as sess:
 	i = 0
 	j = 0
 	epoch_loss = 0
-	batchLossFile = open("../hidden_1/batchLossFile.txt","w")
-	epochLossFile = open("../hidden_1/epochLossFile.txt","w")
-	cPrevFile = open("../hidden_1/cPrev.pickle",'w')
-	hPrevFile = open("../hidden_1/hPrev.pickle",'w')
+	batchLossFile = open("../hidden_1_lr_0.001_clip_100_steps_128/batchLossFile.txt","w")
+	epochLossFile = open("../hidden_1_lr_0.001_clip_100_steps_128/epochLossFile.txt","w")
+	cPrevFile = open("../hidden_1_lr_0.001_clip_100_steps_128/cPrev.pickle",'w')
+	hPrevFile = open("../hidden_1_lr_0.001_clip_100_steps_128/hPrev.pickle",'w')
 	while True:
 		print "Iteration : ", j
-		if (nSteps*(1 + i) + 1) <= data.shape[0]:
-			batch_x = data[(i*nSteps) : (nSteps*(1 + i)), 0:nInputs]
-			batch_y = data[(i*nSteps + 1) : (nSteps*(1 + i) + 1), 0:nInputs]
+		if (nSteps*(1 + i) + 1) <= len(text):
+			text_x = text[(i*nSteps) : (nSteps*(1 + i))]
+			text_y = text[(i*nSteps + 1) : (nSteps*(1 + i) + 1)]
+			batch_x = []
+			for s in text_x:
+				a = np.zeros(shape=[len(unique_char)])
+				a[uniqueCharToInt[s]] = 1
+				batch_x.append(a)
+			batch_x = np.array(batch_x)
+
+			batch_y = []
+			for s in text_y:
+				a = np.zeros(shape=[len(unique_char)])
+				a[uniqueCharToInt[s]] = 1
+				batch_y.append(a)
+			batch_y = np.array(batch_y)
+
 			_, batch_loss, cPrevSess, hPrevSess =  sess.run([train,loss,cPrevBatch,hPrevBatch],{x : batch_x, y : batch_y, cPrev : cPrevSess, hPrev : hPrevSess})			
 			print "loss : ", batch_loss
 			batchLossFile.write("%s\n" % batch_loss)
@@ -157,8 +166,8 @@ with tf.Session() as sess:
 			j += 1
 			i += 1
 
-			if j % saveIteration == 0 :
-				save_path = saver.save(sess, "../hidden_1/model_checkpoint/save_net.ckpt")
+			if j % 100 == 0 :
+				save_path = saver.save(sess, "../hidden_1_lr_0.001_clip_100_steps_128/model_checkpoint/save_net.ckpt")
 				pickle.dump(cPrevSess,cPrevFile)
 				pickle.dump(hPrevSess,hPrevFile)
 				print "model saved"
