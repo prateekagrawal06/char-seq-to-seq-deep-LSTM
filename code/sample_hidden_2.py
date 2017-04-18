@@ -153,7 +153,7 @@ with tf.Session() as sess:
 	startChar = np.zeros(shape = [1,nInputs])
 	startChar[0,5] = 1
 
-	for i in range(200):
+	for i in range(1000):
 		hPrev1Sess = hPrev2Sess
 		cPrev1Sess = cPrev2Sess
 		nextCharProb,cPrev2Sess, hPrev2Sess = sess.run([results,cPrev2Batch,hPrev2Batch],{ x : startChar, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
