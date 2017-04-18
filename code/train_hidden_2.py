@@ -1,36 +1,32 @@
 import tensorflow as tf
 import numpy as np
 import pickle
-#import matplotlib.pyplot as plt
-def getData(fileDir):
-	with open(fileDir, "rb") as myfile:
-	    text=myfile.read()
-	#text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
-	unique_char = set(text)
-	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
-	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
-	data = []
-	for s in text:
-		a = np.zeros(shape=[len(unique_char)])
-		a[uniqueCharToInt[s]] = 1
-		data.append(a)
-	data = np.array(data)
-	#data = data[:100000]
-	return data, uniqueCharToInt, intToUniqueChar,unique_char
 
-data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
-print data.shape
+with open("../data/processedData.pickle",'r') as pd:
+	text = pickle.load(pd)
+
+with open("../data/uniqueChar.pickle",'r') as uc:
+	unique_char = pickle.load(uc)
+
+with open("../data/uniqueCharToInt.pickle",'r') as uc1:
+	uniqueCharToInt = pickle.load(uc1)
+
+with open("../data/intToUniqueChar.pickle",'r') as uc2:
+	intToUniqueChar = pickle.load(uc2)
+
+
+print len(text)
 print "No. of unique characters: ", len(unique_char)
 print uniqueCharToInt
+print intToUniqueChar
 print unique_char
-
 
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
 nSteps = 128
-clipValue = 5
+clipValue = 100
 
 
 x = tf.placeholder(tf.float32,[None,nInputs])
@@ -39,8 +35,8 @@ y = tf.placeholder(tf.float32,[None,nOutputs])
 hPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
-hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
-cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+#hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+#cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 
 weights = {
@@ -65,23 +61,23 @@ weights = {
 }
 biases = {
     # (nHiddenUnits1, )
-    'input': tf.Variable(tf.constant(0.01, shape=[nHiddenUnits, ]),name = 'biasesIn'),
+    'input': tf.Variable(tf.constant(0.00, shape=[nHiddenUnits, ]),name = 'biasesIn'),
 
-    'i1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi1'),
-    'f1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf1'),
-    'o1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso1'),
-    'g1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg1'),
+    'i1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesi1'),
+    'f1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf1'),
+    'o1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso1'),
+    'g1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg1'),
 
-    'hh' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseshh'),
+    'hh' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseshh'),
 
-    'i2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi2'),
-    'f2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf2'),
-    'o2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso2'),
-    'g2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg2'),    
+    'i2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesi2'),
+    'f2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf2'),
+    'o2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso2'),
+    'g2' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg2'),    
 
 
     # (nOutputs, )
-    'output': tf.Variable(tf.constant(0.1, shape=[nOutputs, ]), name = 'biasesOut')
+    'output': tf.Variable(tf.constant(0.0, shape=[nOutputs, ]), name = 'biasesOut')
 }
 
 
@@ -138,7 +134,7 @@ hStates1,cPrev1Batch,hPrev1Batch = unroll_LSTM(inputHidden1, cPrev1, hPrev1,1)
 
 inputHidden2 = tf.matmul(hStates1, weights['hh']) + biases['hh']
 
-hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev2, hPrev2,2)
+hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev1Batch, hPrev1Batch,2)
 
 results = tf.matmul(hStates2, weights['output']) + biases['output']
 results = tf.reshape(results,[nSteps,nOutputs])
@@ -158,33 +154,49 @@ with tf.Session() as sess:
 	sess.run(init)
 	cPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
 	hPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
-	cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
-	hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	#cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	#hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
 	i = 0
 	j = 0
 	epoch_loss = 0
-	batchLossFile = open("../hidden_2/batchLossFile.txt","w")
-	epochLossFile = open("../hidden_2/epochLossFile.txt","w")
-	cPrev1File = open("../hidden_2/cPrev1.pickle",'w')
-	hPrev1File = open("../hidden_2/hPrev1.pickle",'w')
-	cPrev2File = open("../hidden_2/cPrev2.pickle",'w')
-	hPrev2File = open("../hidden_2/hPrev2.pickle",'w')
+	batchLossFile = open("../hidden_2_lr_0.001_clip_100_steps_128/batchLossFile.txt","w")
+	epochLossFile = open("../hidden_2_lr_0.001_clip_100_steps_128/epochLossFile.txt","w")
+	cPrev2File = open("../hidden_2_lr_0.001_clip_100_steps_128/cPrev2.pickle",'w')
+	hPrev2File = open("../hidden_2_lr_0.001_clip_100_steps_128/hPrev2.pickle",'w')
+	#cPrev2File = open("../hidden_2/cPrev2.pickle",'w')
+	#hPrev2File = open("../hidden_2/hPrev2.pickle",'w')
 	while True:
 		print "Iteration : ", j
-		if (nSteps*(1 + i) + 1) <= data.shape[0]:
-			batch_x = data[(i*nSteps) : (nSteps*(1 + i)), 0:nInputs]
-			batch_y = data[(i*nSteps + 1) : (nSteps*(1 + i) + 1), 0:nInputs]
-			_, batch_loss, cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess =  sess.run([train,loss,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess})			
+		if (nSteps*(1 + i) + 1) <= len(text):
+			text_x = text[(i*nSteps) : (nSteps*(1 + i))]
+			text_y = text[(i*nSteps + 1) : (nSteps*(1 + i) + 1)]
+			batch_x = []
+			for s in text_x:
+				a = np.zeros(shape=[len(unique_char)])
+				a[uniqueCharToInt[s]] = 1
+				batch_x.append(a)
+			batch_x = np.array(batch_x)
+
+			batch_y = []
+			for s in text_y:
+				a = np.zeros(shape=[len(unique_char)])
+				a[uniqueCharToInt[s]] = 1
+				batch_y.append(a)
+			batch_y = np.array(batch_y)			
+
+			_, batch_loss, cPrev2Sess, hPrev2Sess =  sess.run([train,loss,cPrev2Batch,hPrev2Batch],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
+			hPrev1Sess = hPrev2Sess
+			cPrev1Sess = cPrev2Sess			
 			print "loss : ", batch_loss
 			batchLossFile.write("%s\n" % batch_loss)
 			epoch_loss += batch_loss
 			j += 1
 			i += 1
 
-			if j % 10 == 0 :
-				save_path = saver.save(sess, "../hidden_2/model_checkpoint/save_net.ckpt")
-				pickle.dump(cPrev1Sess,cPrev1File)
-				pickle.dump(hPrev1Sess,hPrev1File)
+			if j % 100 == 0 :
+				save_path = saver.save(sess, "../hidden_2_lr_0.001_clip_100_steps_128/model_checkpoint/save_net.ckpt")
+				#pickle.dump(cPrev1Sess,cPrev1File)
+				#pickle.dump(hPrev1Sess,hPrev1File)
 				pickle.dump(cPrev2Sess,cPrev2File)
 				pickle.dump(hPrev2Sess,hPrev2File)
 				

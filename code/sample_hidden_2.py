@@ -3,26 +3,23 @@ import numpy as np
 import pickle
 
 
-def getData(fileDir):
-	with open(fileDir, "rb") as myfile:
-	    text=myfile.read()
-	#text = "prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal prateek Agrawal"
-	unique_char = set(text)
-	uniqueCharToInt = {s : i for i,s in enumerate(unique_char)}
-	intToUniqueChar = {i : s for i,s in enumerate(unique_char)}
-	data = []
-	for s in text:
-		a = np.zeros(shape=[len(unique_char)])
-		a[uniqueCharToInt[s]] = 1
-		data.append(a)
-	data = np.array(data)
-	#data = data[:100000]
-	return data, uniqueCharToInt, intToUniqueChar,unique_char
+with open("../data/processedData.pickle",'r') as pd:
+	text = pickle.load(pd)
 
-data, uniqueCharToInt, intToUniqueChar,unique_char = getData("../data/input_william.rtf")
-print data.shape
+with open("../data/uniqueChar.pickle",'r') as uc:
+	unique_char = pickle.load(uc)
+
+with open("../data/uniqueCharToInt.pickle",'r') as uc1:
+	uniqueCharToInt = pickle.load(uc1)
+
+with open("../data/intToUniqueChar.pickle",'r') as uc2:
+	intToUniqueChar = pickle.load(uc2)
+
+
+print len(text)
 print "No. of unique characters: ", len(unique_char)
 print uniqueCharToInt
+print intToUniqueChar
 print unique_char
 
 nSteps = 1
@@ -35,8 +32,8 @@ x = tf.placeholder(tf.float32,[None,nInputs])
 hPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
-hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
-cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+#hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+#cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 weights = {
     # (nInputs, nHiddenUnit1)
@@ -60,23 +57,23 @@ weights = {
 }
 biases = {
     # (nHiddenUnits1, )
-    'input': tf.Variable(tf.constant(0.01, shape=[nHiddenUnits, ]),name = 'biasesIn'),
+    'input': tf.Variable(tf.constant(0.00, shape=[nHiddenUnits, ]),name = 'biasesIn'),
 
-    'i1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi1'),
-    'f1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf1'),
-    'o1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso1'),
-    'g1' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg1'),
+    'i1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesi1'),
+    'f1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesf1'),
+    'o1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biaseso1'),
+    'g1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesg1'),
 
-    'hh' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseshh'),
+    'hh' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biaseshh'),
 
-    'i2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesi2'),
-    'f2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesf2'),
-    'o2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biaseso2'),
-    'g2' : tf.Variable(tf.constant(0.01,shape=[nHiddenUnits, ]), name = 'biasesg2'),    
+    'i2' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesi2'),
+    'f2' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesf2'),
+    'o2' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biaseso2'),
+    'g2' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesg2'),    
 
 
     # (nOutputs, )
-    'output': tf.Variable(tf.constant(0.1, shape=[nOutputs, ]), name = 'biasesOut')
+    'output': tf.Variable(tf.constant(0.0, shape=[nOutputs, ]), name = 'biasesOut')
 }
 
 
@@ -132,7 +129,7 @@ hStates1,cPrev1Batch,hPrev1Batch = unroll_LSTM(inputHidden1, cPrev1, hPrev1,1)
 
 inputHidden2 = tf.matmul(hStates1, weights['hh']) + biases['hh']
 
-hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev2, hPrev2,2)
+hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev1Batch, hPrev1Batch,2)
 
 results = tf.matmul(hStates2, weights['output']) + biases['output']
 results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
@@ -141,15 +138,15 @@ results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	saver.restore(sess,"../hidden_2/model_checkpoint/save_net.ckpt")
+	saver.restore(sess,"../hidden_2_lr_0.001_clip_100_steps_128/model_checkpoint/save_net.ckpt")
 	print "Model Restored"
-	with open("../hidden_2/cPrev1.pickle","r") as c1:
-		cPrev1Sess = pickle.load(c1)
-	with open("../hidden_2/hPrev1.pickle","r") as h1:
-		hPrev1Sess = pickle.load(h1)
-	with open("../hidden_2/cPrev2.pickle","r") as c2:
+	#with open("../hidden_2/cPrev1.pickle","r") as c1:
+		#cPrev1Sess = pickle.load(c1)
+	#with open("../hidden_2/hPrev1.pickle","r") as h1:
+		#hPrev1Sess = pickle.load(h1)
+	with open("../hidden_2_lr_0.001_clip_100_steps_128/cPrev2.pickle","r") as c2:
 		cPrev2Sess = pickle.load(c2)
-	with open("../hidden_2/hPrev2.pickle","r") as h2:
+	with open("../hidden_2_lr_0.001_clip_100_steps_128/hPrev2.pickle","r") as h2:
 		hPrev2Sess = pickle.load(h2)
 
 	char = []
@@ -157,7 +154,9 @@ with tf.Session() as sess:
 	startChar[0,5] = 1
 
 	for i in range(200):
-		nextCharProb,cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : startChar,cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
+		hPrev1Sess = hPrev2Sess
+		cPrev1Sess = cPrev2Sess
+		nextCharProb,cPrev2Sess, hPrev2Sess = sess.run([results,cPrev2Batch,hPrev2Batch],{ x : startChar, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
 		startChar = np.zeros(shape = [1,nInputs])

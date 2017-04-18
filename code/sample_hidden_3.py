@@ -31,11 +31,11 @@ x = tf.placeholder(tf.float32,[None,nInputs])
 hPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
-hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
-cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+#hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+#cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
-hPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
-cPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+#hPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+#cPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 weights = {
     # (nInputs, nHiddenUnit1)
@@ -147,11 +147,11 @@ hStates1,cPrev1Batch,hPrev1Batch = unroll_LSTM(inputHidden1, cPrev1, hPrev1,1)
 
 inputHidden2 = tf.matmul(hStates1, weights['hh']) + biases['hh']
 
-hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev2, hPrev2,2)
+hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev1Batch,hPrev1Batch,2)
 
 inputHidden3 = tf.matmul(hStates2, weights['hhh']) + biases['hhh']
 
-hStates3,cPrev3Batch,hPrev3Batch = unroll_LSTM(inputHidden3, cPrev3, hPrev3,3)
+hStates3,cPrev3Batch,hPrev3Batch = unroll_LSTM(inputHidden3,cPrev2Batch,hPrev2Batch,3)
 
 results = tf.matmul(hStates3, weights['output']) + biases['output']
 results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
@@ -162,14 +162,14 @@ saver = tf.train.Saver()
 with tf.Session() as sess:
 	saver.restore(sess,"../hidden_3_lr_0.001_clip_100_step_128/model_checkpoint/save_net.ckpt")
 	print "Model Restored"
-	with open("../hidden_3_lr_0.001_clip_100_step_128/cPrev1.pickle","r") as c1:
-		cPrev1Sess = pickle.load(c1)
-	with open("../hidden_3_lr_0.001_clip_100_step_128/hPrev1.pickle","r") as h1:
-		hPrev1Sess = pickle.load(h1)
-	with open("../hidden_3_lr_0.001_clip_100_step_128/cPrev2.pickle","r") as c2:
-		cPrev2Sess = pickle.load(c2)
-	with open("../hidden_3_lr_0.001_clip_100_step_128/hPrev2.pickle","r") as h2:
-		hPrev2Sess = pickle.load(h2)
+	#with open("../hidden_3_lr_0.001_clip_100_step_128/cPrev1.pickle","r") as c1:
+		#cPrev1Sess = pickle.load(c1)
+	#with open("../hidden_3_lr_0.001_clip_100_step_128/hPrev1.pickle","r") as h1:
+		#hPrev1Sess = pickle.load(h1)
+	#with open("../hidden_3_lr_0.001_clip_100_step_128/cPrev2.pickle","r") as c2:
+		#cPrev2Sess = pickle.load(c2)
+	#with open("../hidden_3_lr_0.001_clip_100_step_128/hPrev2.pickle","r") as h2:
+		#hPrev2Sess = pickle.load(h2)
 	with open("../hidden_3_lr_0.001_clip_100_step_128/cPrev3.pickle","r") as c3:
 		cPrev3Sess = pickle.load(c3)
 	with open("../hidden_3_lr_0.001_clip_100_step_128/hPrev3.pickle","r") as h3:
@@ -180,7 +180,9 @@ with tf.Session() as sess:
 	startChar[0,5] = 1
 
 	for i in range(1000):
-		nextCharProb,cPrev3Sess, hPrev3Sess, cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results, cPrev3Batch,hPrev3Batch, cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : startChar,cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess,cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
+		cPrev1Sess = cPrev3Sess
+		hPrev1Sess = hPrev3Sess
+		nextCharProb,cPrev3Sess, hPrev3Sess = sess.run([results, cPrev3Batch,hPrev3Batch],{ x : startChar,cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
 		char.append(nextChar)
