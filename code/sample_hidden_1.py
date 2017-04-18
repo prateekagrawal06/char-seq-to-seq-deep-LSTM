@@ -115,6 +115,8 @@ with tf.Session() as sess:
 		cPrevSess = pickle.load(c)
 	with open("../hidden_1_lr_0.001_clip_100_steps_128/hPrev.pickle","r") as h:
 		hPrevSess = pickle.load(h)
+	hPrevSess = np.zeros(shape = [nHiddenUnits,1])
+	cPrevSess = np.zeros(shape = [nHiddenUnits,1])
 
 	char = []
 	startChar = np.zeros(shape = [1,nInputs])
