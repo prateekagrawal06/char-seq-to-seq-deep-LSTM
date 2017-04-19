@@ -23,7 +23,7 @@ print unique_char
 
 nSteps = 1
 nInputs = len(unique_char)
-nHiddenUnits = 512
+nHiddenUnits = 256
 nOutputs = len(unique_char)
 
 x = tf.placeholder(tf.float32,[None,nInputs])
@@ -33,14 +33,14 @@ cPrev = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 weights = {
     # (nInputs, nHiddenUnit1)
-    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn'),
+    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn') * 0.1,
 
-    'i' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi'),
-    'f' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf'),
-    'o' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso'),
-    'g' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg'),
+    'i' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi') * 0.1,
+    'f' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf') * 0.1,
+    'o' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso') * 0.1,
+    'g' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg') * 0.1,
     # (nHiddenUnits1, nOutputs)
-    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut')
+    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut') * 0.1
 }
 biases = {
     # (nHiddenUnits1, )
@@ -54,6 +54,7 @@ biases = {
     # (nOutputs, )
     'output': tf.Variable(tf.constant(0.0, shape=[nOutputs, ]), name = 'biasesOut')
 }
+
 
 
 def cell(x,cPrev,hPrev):
@@ -109,12 +110,12 @@ results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	saver.restore(sess,"../hidden_1_lr_0.001_clip_100_steps_128/model_checkpoint/save_net.ckpt")
+	saver.restore(sess,"../hidden_1_haikus/model_checkpoint/save_net.ckpt")
 	print "Model Restored"
-	with open("../hidden_1_lr_0.001_clip_100_steps_128/cPrev.pickle","r") as c:
-		cPrevSess = pickle.load(c)
-	with open("../hidden_1_lr_0.001_clip_100_steps_128/hPrev.pickle","r") as h:
-		hPrevSess = pickle.load(h)
+	#with open("../hidden_1_lr_0.001_clip_100_steps_128/cPrev.pickle","r") as c:
+		#cPrevSess = pickle.load(c)
+	#with open("../hidden_1_lr_0.001_clip_100_steps_128/hPrev.pickle","r") as h:
+		#hPrevSess = pickle.load(h)
 	hPrevSess = np.zeros(shape = [nHiddenUnits,1])
 	cPrevSess = np.zeros(shape = [nHiddenUnits,1])
 

@@ -1,5 +1,5 @@
 import pickle
-with open("../data/input_shak.txt", "rb") as myfile:
+with open("../data/haikus.txt", "r") as myfile:
 	    text=myfile.read()
 #text = text[347:]
 unique_char = set(text)
