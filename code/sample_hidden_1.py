@@ -123,7 +123,7 @@ with tf.Session() as sess:
 	startChar = np.zeros(shape = [1,nInputs])
 	startChar[0,8] = 1
 
-	for i in range(10000):
+	for i in range(1000):
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : startChar, cPrev : cPrevSess, hPrev : hPrevSess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
