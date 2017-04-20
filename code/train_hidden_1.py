@@ -118,7 +118,7 @@ hStates,cPrevBatch,hPrevBatch = unroll_LSTM(x_in, cPrev, hPrev)
 
 results = tf.matmul(hStates, weights['output']) + biases['output']
 results = tf.reshape(results,[nSteps,nOutputs])
-
+### checkout the loss function,,,might be wrong
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, labels = y))
 
 
