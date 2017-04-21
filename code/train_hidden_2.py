@@ -161,8 +161,8 @@ with tf.Session() as sess:
 	epoch_loss = 0
 	batchLossFile = open("../hidden_2_haikus/batchLossFile.txt","w")
 	epochLossFile = open("../hidden_2_haikus/epochLossFile.txt","w")
-	cPrev2File = open("../hidden_2_haikus/cPrev2.pickle",'w')
-	hPrev2File = open("../hidden_2_haikus/hPrev2.pickle",'w')
+	cPrev1File = open("../hidden_2_haikus/cPrev1.pickle",'w')
+	hPrev1File = open("../hidden_2_haikus/hPrev1.pickle",'w')
 	cPrev2File = open("../hidden_2_haikus/cPrev2.pickle",'w')
 	hPrev2File = open("../hidden_2_haikus/hPrev2.pickle",'w')
 	while True:
