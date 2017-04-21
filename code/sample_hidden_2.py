@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 
 
-with open("../data/processedData.pickle",'r') as pd:
+with open("../data/processedDataTest.pickle",'r') as pd:
 	text = pickle.load(pd)
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -26,6 +26,7 @@ nSteps = 1
 nInputs = len(unique_char)
 nHiddenUnits = 512
 nOutputs = len(unique_char)
+path = "../hidden_1_limericks/"
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 
@@ -129,7 +130,7 @@ hStates1,cPrev1Batch,hPrev1Batch = unroll_LSTM(inputHidden1, cPrev1, hPrev1,1)
 
 inputHidden2 = tf.matmul(hStates1, weights['hh']) + biases['hh']
 
-hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev1Batch, hPrev1Batch,2)
+hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev2, hPrev2,2)
 
 results = tf.matmul(hStates2, weights['output']) + biases['output']
 results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
@@ -138,36 +139,57 @@ results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	saver.restore(sess,"../hidden_2_haikus/model_checkpoint/save_net.ckpt")
+	saver.restore(sess,path + "model_checkpoint/save_net.ckpt")
 	print "Model Restored"
-	#with open("../hidden_2/cPrev1.pickle","r") as c1:
-		#cPrev1Sess = pickle.load(c1)
-	#with open("../hidden_2/hPrev1.pickle","r") as h1:
-		#hPrev1Sess = pickle.load(h1)
-	#with open("../hidden_2_lr_0.001_clip_100_steps_128/cPrev2.pickle","r") as c2:
-		#cPrev2Sess = pickle.load(c2)
-	#with open("../hidden_2_lr_0.001_clip_100_steps_128/hPrev2.pickle","r") as h2:
-		#hPrev2Sess = pickle.load(h2)
+	cPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
+	cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	## code to predict 1000 characters after warm up##	
+	for t in text[:100]:
+		ch = np.zeros(shape = [1,nInputs])
+		ch[0,uniqueCharToInt[t]] = 1
+		nextCharProb, cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess})
+
+
+	## code to predict 1000 characters after warm up##	
+	predictedChar = []
+	startChar = np.zeros(shape = [1,nInputs])
+	startChar[0,uniqueCharToInt[text[100]]] = 1
+
+	for i in range(1000):
+		nextCharProb,cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : startChar, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess})
+		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
+		nextChar = intToUniqueChar[nextCharIndex]
+		predictedChar.append(nextChar)
+		startChar = np.zeros(shape = [1,nInputs])
+		startChar[0,nextCharIndex] = 1
+		
+	print "text sampled"
+	print "".join(predictedChar)
+
+	## evaluate the model for all the testing set characters
+
 	cPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
 	hPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
 	cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
 	hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
 
+	acc = []
 
-	char = []
-	startChar = np.zeros(shape = [1,nInputs])
-	startChar[0,8] = 1
-
-	for i in range(1000):
-		#hPrev1Sess = hPrev2Sess
-		#cPrev1Sess = cPrev2Sess
+	for t in text:
+		ch = np.zeros(shape = [1,nInputs])
+		ch[0,uniqueCharToInt[t]] = 1
 		nextCharProb,cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : startChar, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
-		startChar = np.zeros(shape = [1,nInputs])
-		startChar[0,nextCharIndex] = 1
-		char.append(nextChar)
-	print "text sampled"
-	print "".join(char)
+		if nextChar == t:
+			acc.append(1)
+		else:
+			acc.append(0)
+	print acc
+	print np.mean(acc)
+
+
 
 	

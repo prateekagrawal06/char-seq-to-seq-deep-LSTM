@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 
 
-with open("../data/processedData.pickle",'r') as pd:
+with open("../data/processedDataTest.pickle",'r') as pd:
 	text = pickle.load(pd)
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -25,44 +25,45 @@ nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
 nSteps = 1
+path = "../hidden_1_limericks/"
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 
 hPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
-#hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
-#cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
-#hPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
-#cPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+hPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+cPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 weights = {
     # (nInputs, nHiddenUnit1)
-    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn'),
+    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn')*0.1,
 
-    'i1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi1'),
-    'f1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf1'),
-    'o1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso1'),
-    'g1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg1'),
+    'i1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi1')*0.1,
+    'f1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf1')*0.1,
+    'o1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso1')*0.1,
+    'g1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg1')*0.1,
     # (nHiddenUnits1, nOutputs)
 
-    'hh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshh'),
+    'hh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshh')*0.1,
 
-    'i2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi2'),
-    'f2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf2'),
-    'o2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso2'),
-    'g2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg2'),
+    'i2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi2')*0.1,
+    'f2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf2')*0.1,
+    'o2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso2')*0.1,
+    'g2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg2')*0.1,
 
-    'hhh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshhh'),
+    'hhh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshhh')*0.1,
 
-    'i3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi3'),
-    'f3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf3'),
-    'o3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso3'),
-    'g3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg3'),
+    'i3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi3')*0.1,
+    'f3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf3')*0.1,
+    'o3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso3')*0.1,
+    'g3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg3')*0.1,
 
     # (nHiddenUnits1, nOutputs)
-    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut')
+    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut')*0.1
 }
 biases = {
     # (nHiddenUnits1, )
@@ -147,11 +148,11 @@ hStates1,cPrev1Batch,hPrev1Batch = unroll_LSTM(inputHidden1, cPrev1, hPrev1,1)
 
 inputHidden2 = tf.matmul(hStates1, weights['hh']) + biases['hh']
 
-hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev1Batch,hPrev1Batch,2)
+hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev2,hPrev2,2)
 
 inputHidden3 = tf.matmul(hStates2, weights['hhh']) + biases['hhh']
 
-hStates3,cPrev3Batch,hPrev3Batch = unroll_LSTM(inputHidden3,cPrev2Batch,hPrev2Batch,3)
+hStates3,cPrev3Batch,hPrev3Batch = unroll_LSTM(inputHidden3,cPrev3,hPrev3,3)
 
 results = tf.matmul(hStates3, weights['output']) + biases['output']
 results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
@@ -160,35 +161,59 @@ results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	saver.restore(sess,"../hidden_3_lr_0.001_clip_100_steps_128/model_checkpoint/save_net.ckpt")
+	saver.restore(sess,path + "model_checkpoint/save_net.ckpt")
 	print "Model Restored"
-	#with open("../hidden_3_lr_0.001_clip_100_step_128/cPrev1.pickle","r") as c1:
-		#cPrev1Sess = pickle.load(c1)
-	#with open("../hidden_3_lr_0.001_clip_100_step_128/hPrev1.pickle","r") as h1:
-		#hPrev1Sess = pickle.load(h1)
-	#with open("../hidden_3_lr_0.001_clip_100_step_128/cPrev2.pickle","r") as c2:
-		#cPrev2Sess = pickle.load(c2)
-	#with open("../hidden_3_lr_0.001_clip_100_step_128/hPrev2.pickle","r") as h2:
-		#hPrev2Sess = pickle.load(h2)
-	with open("../hidden_3_lr_0.001_clip_100_steps_128/cPrev3.pickle","r") as c3:
-		cPrev3Sess = pickle.load(c3)
-	with open("../hidden_3_lr_0.001_clip_100_steps_128/hPrev3.pickle","r") as h3:
-		hPrev3Sess = pickle.load(h3)
+	cPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
+	cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	cPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
 
-	char = []
+	for t in text[:100]:
+		ch = np.zeros(shape = [1,nInputs])
+		ch[0,uniqueCharToInt[t]] = 1
+		nextCharProb, cPrev3Sess, hPrev3Sess, cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results, cPrev3Batch, hPrev3Batch, cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess})
+
+
+
+	predictedChar = []
 	startChar = np.zeros(shape = [1,nInputs])
-	startChar[0,5] = 1
+	startChar[0,uniqueCharToInt[text[100]]] = 1
 
 	for i in range(1000):
-		cPrev1Sess = cPrev3Sess
-		hPrev1Sess = hPrev3Sess
-		nextCharProb,cPrev3Sess, hPrev3Sess = sess.run([results, cPrev3Batch,hPrev3Batch],{ x : startChar,cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
+		nextCharProb, cPrev3Sess, hPrev3Sess, cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results, cPrev3Batch, hPrev3Batch, cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
-		char.append(nextChar)
+		predictedChar.append(nextChar)
 		startChar = np.zeros(shape = [1,nInputs])
-		startChar[0,uniqueCharToInt[nextChar]] = 1
+		startChar[0,nextCharIndex] = 1
 		
 	print "text sampled"
 	print "".join(char)
+
+	## evaluate the model for all the testing set characters
+
+	cPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
+	cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	cPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
+
+	acc = []
+
+	for t in text:
+		ch = np.zeros(shape = [1,nInputs])
+		ch[0,uniqueCharToInt[t]] = 1
+		nextCharProb, cPrev3Sess, hPrev3Sess, cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results, cPrev3Batch, hPrev3Batch, cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess})
+		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
+		nextChar = intToUniqueChar[nextCharIndex]
+		if nextChar == t:
+			acc.append(1)
+		else:
+			acc.append(0)
+	print acc
+	print np.mean(acc)
+
 

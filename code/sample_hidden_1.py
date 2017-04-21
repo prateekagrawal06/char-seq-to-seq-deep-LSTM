@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 
 
-with open("../data/processedData.pickle",'r') as pd:
+with open("../data/processedDataTest.pickle",'r') as pd:
 	text = pickle.load(pd)
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -23,14 +23,14 @@ print unique_char
 
 nSteps = 1
 nInputs = len(unique_char)
-nHiddenUnits = 256
+nHiddenUnits = 512
 nOutputs = len(unique_char)
-path = "../hidden_1_haikus/"
+path = "../hidden_1_limericks/"
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 
-hPrev = tf.placeholder(tf.float32,[nHiddenUnits,1])
-cPrev = tf.placeholder(tf.float32,[nHiddenUnits,1])
+hPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 weights = {
     # (nInputs, nHiddenUnit1)
@@ -103,7 +103,7 @@ def unroll_LSTM(x_in,cPrev,hPrev):
 x = tf.reshape(x,[-1,nInputs])
 x_in = tf.add(tf.matmul(x,weights['input']),biases['input'])
 
-hStates, cPrevBatch, hPrevBatch = unroll_LSTM(x_in,cPrev,hPrev)
+hStates, cPrevBatch, hPrevBatch = unroll_LSTM(x_in,cPrev1,hPrev1)
 
 results = tf.matmul(hStates, weights['output']) + biases['output']
 results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
@@ -116,18 +116,53 @@ with tf.Session() as sess:
 	hPrevSess = np.zeros(shape = [nHiddenUnits,1])
 	cPrevSess = np.zeros(shape = [nHiddenUnits,1])
 
-	char = []
+	## loop to warm up the model for first 100 characters from the testing set##
+	for t in text[:100]:
+		ch = np.zeros(shape = [1,nInputs])
+		ch[0,uniqueCharToInt[t]] = 1
+		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : ch, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
+	
+	## code to predict 1000 characters after warm up##	
+	predictedChar = []
 	startChar = np.zeros(shape = [1,nInputs])
-	startChar[0,8] = 1
+	startChar[0,uniqueCharToInt[text[100]]] = 1
 
 	for i in range(1000):
-		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : startChar, cPrev : cPrevSess, hPrev : hPrevSess})
+		
+		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : startChar, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
-		char.append(nextChar)
+		predictedChar.append(nextChar)		
 		startChar = np.zeros(shape = [1,nInputs])
 		startChar[0,nextCharIndex] = 1		
 	print "text sampled"
-	print "".join(char)
+	print "".join(predictChar)
+
+	## evaluate the model for all the testing set characters
+
+	hPrevSess = np.zeros(shape = [nHiddenUnits,1])
+	cPrevSess = np.zeros(shape = [nHiddenUnits,1])
+
+	acc = []
+
+	for t in text:
+		ch = np.zeros(shape = [1,nInputs])
+		ch[0,uniqueCharToInt[t]] = 1
+		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : ch, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
+		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
+		nextChar = intToUniqueChar[nextCharIndex]
+		if nextChar == t:
+			acc.append(1)
+		else:
+			acc.append(0)
+	print acc
+	print np.mean(acc)
+
+
+
+
+
+
+
 
 	
