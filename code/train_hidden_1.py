@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/processedData.pickle",'r') as pd:
+with open("../data/processedDataTrain.pickle",'r') as pd:
 	text = pickle.load(pd)
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -22,10 +22,11 @@ print unique_char
 
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
-nHiddenUnits = 256
+nHiddenUnits = 512
 lr = .001
-nSteps = 64
+nSteps = 128
 clipValue = "NA"
+path = "../hidden_1_limericks/"
 
 print "learning rate : ", lr
 print "no of sequesnce : " , nSteps
@@ -36,8 +37,8 @@ x = tf.placeholder(tf.float32,[None,nInputs])
 y = tf.placeholder(tf.float32,[None,nOutputs])
 
 
-hPrev = tf.placeholder(tf.float32,[nHiddenUnits,1])
-cPrev = tf.placeholder(tf.float32,[nHiddenUnits,1])
+hPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 
 weights = {
@@ -114,7 +115,7 @@ def unroll_LSTM(x_in, cPrev, hPrev):
 x = tf.reshape(x,[-1,nInputs])
 x_in = tf.add(tf.matmul(x,weights['input']),biases['input'])
 
-hStates,cPrevBatch,hPrevBatch = unroll_LSTM(x_in, cPrev, hPrev)
+hStates,cPrevBatch,hPrevBatch = unroll_LSTM(x_in, cPrev1, hPrev1)
 
 results = tf.matmul(hStates, weights['output']) + biases['output']
 results = tf.reshape(results,[nSteps,nOutputs])
@@ -137,10 +138,9 @@ with tf.Session() as sess:
 	i = 0
 	j = 0
 	epoch_loss = 0
-	batchLossFile = open("../hidden_1_haikus/batchLossFile.txt","w")
-	epochLossFile = open("../hidden_1_haikus/epochLossFile.txt","w")
-	cPrevFile = open("../hidden_1_haikus/cPrev.pickle",'w')
-	hPrevFile = open("../hidden_1_haikus/hPrev.pickle",'w')
+	batchLossFile = open(path + "batchLossFile.txt","w")
+	epochLossFile = open(path + "epochLossFile.txt","w")
+	
 	while True:
 		print "Iteration : ", j
 		if (nSteps*(1 + i) + 1) <= len(text):
@@ -160,7 +160,7 @@ with tf.Session() as sess:
 				batch_y.append(a)
 			batch_y = np.array(batch_y)
 
-			_, batch_loss, cPrevSess, hPrevSess =  sess.run([train,loss,cPrevBatch,hPrevBatch],{x : batch_x, y : batch_y, cPrev : cPrevSess, hPrev : hPrevSess})			
+			_, batch_loss, cPrevSess, hPrevSess =  sess.run([train,loss,cPrevBatch,hPrevBatch],{x : batch_x, y : batch_y, cPrev1 : cPrevSess, hPrev1 : hPrevSess})			
 			print "loss : ", batch_loss
 			batchLossFile.write("%s\n" % batch_loss)
 			epoch_loss += batch_loss
@@ -168,9 +168,8 @@ with tf.Session() as sess:
 			i += 1
 
 			if j % 100 == 0 :
-				save_path = saver.save(sess, "../hidden_1_haikus/model_checkpoint/save_net.ckpt")
-				pickle.dump(cPrevSess,cPrevFile)
-				pickle.dump(hPrevSess,hPrevFile)
+				save_path = saver.save(sess, path + "model_checkpoint/save_net.ckpt")
+				
 				print "model saved"
 
 

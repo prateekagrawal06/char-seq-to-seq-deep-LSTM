@@ -156,7 +156,7 @@ with tf.Session() as sess:
 
 	char = []
 	startChar = np.zeros(shape = [1,nInputs])
-	startChar[0,5] = 1
+	startChar[0,8] = 1
 
 	for i in range(1000):
 		#hPrev1Sess = hPrev2Sess

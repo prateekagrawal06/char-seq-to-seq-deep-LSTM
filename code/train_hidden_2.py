@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/processedData.pickle",'r') as pd:
+with open("../data/processedDataTrain.pickle",'r') as pd:
 	text = pickle.load(pd)
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -27,6 +27,7 @@ nHiddenUnits = 512
 lr = .001
 nSteps = 128
 clipValue = "NA"
+path = "../hidden_2_limericks/"
 
 
 x = tf.placeholder(tf.float32,[None,nInputs])
@@ -159,12 +160,8 @@ with tf.Session() as sess:
 	i = 0
 	j = 0
 	epoch_loss = 0
-	batchLossFile = open("../hidden_2_haikus/batchLossFile.txt","w")
-	epochLossFile = open("../hidden_2_haikus/epochLossFile.txt","w")
-	cPrev1File = open("../hidden_2_haikus/cPrev1.pickle",'w')
-	hPrev1File = open("../hidden_2_haikus/hPrev1.pickle",'w')
-	cPrev2File = open("../hidden_2_haikus/cPrev2.pickle",'w')
-	hPrev2File = open("../hidden_2_haikus/hPrev2.pickle",'w')
+	batchLossFile = open(path + "batchLossFile.txt","w")
+	epochLossFile = open(path + "epochLossFile.txt","w")
 	while True:
 		print "Iteration : ", j
 		if (nSteps*(1 + i) + 1) <= len(text):
@@ -192,12 +189,7 @@ with tf.Session() as sess:
 			i += 1
 
 			if j % 100 == 0 :
-				save_path = saver.save(sess, "../hidden_2_haikus/model_checkpoint/save_net.ckpt")
-				pickle.dump(cPrev1Sess,cPrev1File)
-				pickle.dump(hPrev1Sess,hPrev1File)
-				pickle.dump(cPrev2Sess,cPrev2File)
-				pickle.dump(hPrev2Sess,hPrev2File)
-				
+				save_path = saver.save(sess, path + "model_checkpoint/save_net.ckpt")
 				print "model saved"
 
 

@@ -25,6 +25,7 @@ nSteps = 1
 nInputs = len(unique_char)
 nHiddenUnits = 256
 nOutputs = len(unique_char)
+path = "../hidden_1_haikus/"
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 
@@ -110,12 +111,8 @@ results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	saver.restore(sess,"../hidden_1_haikus/model_checkpoint/save_net.ckpt")
+	saver.restore(sess,path + "model_checkpoint/save_net.ckpt")
 	print "Model Restored"
-	#with open("../hidden_1_lr_0.001_clip_100_steps_128/cPrev.pickle","r") as c:
-		#cPrevSess = pickle.load(c)
-	#with open("../hidden_1_lr_0.001_clip_100_steps_128/hPrev.pickle","r") as h:
-		#hPrevSess = pickle.load(h)
 	hPrevSess = np.zeros(shape = [nHiddenUnits,1])
 	cPrevSess = np.zeros(shape = [nHiddenUnits,1])
 

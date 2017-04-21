@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/processedData.pickle",'r') as pd:
+with open("../data/processedDataTrain.pickle",'r') as pd:
 	text = pickle.load(pd)
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -25,7 +25,9 @@ nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
 nSteps = 128
-clipValue = 100
+clipValue = "NA"
+path = "../hidden_3_limericks/"
+
 
 print "learning rate : ", lr
 print "no of sequence : " , nSteps
@@ -38,39 +40,39 @@ y = tf.placeholder(tf.float32,[None,nOutputs])
 hPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
-#hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
-#cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+hPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
-#hPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
-#cPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+hPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
+cPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 
 weights = {
     # (nInputs, nHiddenUnit1)
-    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn'),
+    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn')*0.1,
 
-    'i1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi1'),
-    'f1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf1'),
-    'o1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso1'),
-    'g1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg1'),
+    'i1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi1')*0.1,
+    'f1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf1')*0.1,
+    'o1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso1')*0.1,
+    'g1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg1')*0.1,
     # (nHiddenUnits1, nOutputs)
 
-    'hh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshh'),
+    'hh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshh')*0.1,
 
-    'i2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi2'),
-    'f2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf2'),
-    'o2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso2'),
-    'g2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg2'),
+    'i2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi2')*0.1,
+    'f2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf2')*0.1,
+    'o2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso2')*0.1,
+    'g2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg2')*0.1,
 
-    'hhh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshhh'),
+    'hhh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshhh')*0.1,
 
-    'i3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi3'),
-    'f3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf3'),
-    'o3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso3'),
-    'g3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg3'),
+    'i3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi3')*0.1,
+    'f3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf3')*0.1,
+    'o3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso3')*0.1,
+    'g3' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg3')*0.1,
 
     # (nHiddenUnits1, nOutputs)
-    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut')
+    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut')*0.1
 }
 biases = {
     # (nHiddenUnits1, )
@@ -154,11 +156,11 @@ hStates1,cPrev1Batch,hPrev1Batch = unroll_LSTM(inputHidden1, cPrev1, hPrev1,1)
 
 inputHidden2 = tf.matmul(hStates1, weights['hh']) + biases['hh']
 
-hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev1Batch, hPrev1Batch, 2)
+hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev2, hPrev2, 2)
 
 inputHidden3 = tf.matmul(hStates2, weights['hhh']) + biases['hhh']
 
-hStates3,cPrev3Batch,hPrev3Batch = unroll_LSTM(inputHidden3, cPrev2Batch, hPrev2Batch, 3)
+hStates3,cPrev3Batch,hPrev3Batch = unroll_LSTM(inputHidden3, cPrev3, hPrev3, 3)
 
 results = tf.matmul(hStates3, weights['output']) + biases['output']
 results = tf.reshape(results,[nSteps,nOutputs])
@@ -168,8 +170,8 @@ loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, 
 
 optimizer = tf.train.AdamOptimizer(lr)
 dVar = optimizer.compute_gradients(loss)
-dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
-train = optimizer.apply_gradients(dVarClipped)
+#dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
+train = optimizer.apply_gradients(dVar)
 
 
 saver = tf.train.Saver()
@@ -178,21 +180,15 @@ with tf.Session() as sess:
 	sess.run(init)
 	cPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
 	hPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
-	#cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
-	#hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
-	#cPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
-	#hPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
+	cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	cPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
 	i = 0
 	j = 0
 	epoch_loss = 0
-	batchLossFile = open("../hidden_3_lr_0.001_clip_100_steps_128/batchLossFile.txt","w")
-	epochLossFile = open("../hidden_3_lr_0.001_clip_100_steps_128/epochLossFile.txt","w")
-	#cPrev1File = open("../hidden_3_lr_0.001_clip_100_step_128/cPrev1.pickle",'w')
-	#hPrev1File = open("../hidden_3_lr_0.001_clip_100_step_128/hPrev1.pickle",'w')
-	#cPrev2File = open("../hidden_3_lr_0.001_clip_100_step_128/cPrev2.pickle",'w')
-	#hPrev2File = open("../hidden_3_lr_0.001_clip_100_step_128/hPrev2.pickle",'w')
-	cPrev3File = open("../hidden_3_lr_0.001_clip_100_steps_128/cPrev3.pickle",'w')
-	hPrev3File = open("../hidden_3_lr_0.001_clip_100_steps_128/hPrev3.pickle",'w')
+	batchLossFile = open(path + "batchLossFile.txt","w")
+	epochLossFile = open(path + "epochLossFile.txt","w")
 	while True:
 		print "Iteration : ", j
 
@@ -215,10 +211,7 @@ with tf.Session() as sess:
 				batch_y.append(a)
 			batch_y = np.array(batch_y)
 
-			#print batch_x.shape
-			#print batch_y.shape
-			
-			_, batch_loss, cPrev3Sess, hPrev3Sess =  sess.run([train,loss,cPrev3Batch,hPrev3Batch],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
+			_, batch_loss, cPrev3Sess, hPrev3Sess, cPrev2Sess, hPrev2Sess,cPrev1Sess, hPrev1Sess =  sess.run([train,loss,cPrev3Batch,hPrev3Batch,cPrev2Batch,hPrev2BatchcPrev1Batch,hPrev1Batch],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess,cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess,cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess})
 			cPrev1Sess = cPrev3Sess
 			hPrev1Sess = hPrev3Sess			
 			print "loss : ", batch_loss
@@ -228,14 +221,7 @@ with tf.Session() as sess:
 			i += 1
 
 			if j % 100 == 0 :
-				save_path = saver.save(sess, "../hidden_3_lr_0.001_clip_100_steps_128/model_checkpoint/save_net.ckpt")
-				#pickle.dump(cPrev1Sess,cPrev1File)
-				#pickle.dump(hPrev1Sess,hPrev1File)
-				#pickle.dump(cPrev2Sess,cPrev2File)
-				#pickle.dump(hPrev2Sess,hPrev2File)
-				pickle.dump(cPrev3Sess,cPrev3File)
-				pickle.dump(hPrev3Sess,hPrev3File)
-				
+				save_path = saver.save(sess, path + "model_checkpoint/save_net.ckpt")
 				print "model saved"
 
 
