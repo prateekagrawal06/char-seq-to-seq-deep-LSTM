@@ -177,16 +177,18 @@ with tf.Session() as sess:
 
 	acc = []
 
-	for t in text:
+	for i,t in enumerate(tex)t:
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
 		nextCharProb,cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : startChar, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
-		if nextChar == t:
-			acc.append(1)
-		else:
-			acc.append(0)
+		if (i+1) < len(text):
+
+			if nextChar == text[i+1]:
+				acc.append(1)
+			else:
+				acc.append(0)
 	print acc
 	print np.mean(acc)
 

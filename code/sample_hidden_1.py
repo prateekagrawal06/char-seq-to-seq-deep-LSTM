@@ -136,7 +136,7 @@ with tf.Session() as sess:
 		startChar = np.zeros(shape = [1,nInputs])
 		startChar[0,nextCharIndex] = 1		
 	print "text sampled"
-	print "".join(predictChar)
+	print "".join(predictedChar)
 
 	## evaluate the model for all the testing set characters
 
@@ -145,16 +145,17 @@ with tf.Session() as sess:
 
 	acc = []
 
-	for t in text:
+	for i,t in enumerate(text):
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : ch, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
-		if nextChar == t:
-			acc.append(1)
-		else:
-			acc.append(0)
+		if (i+1) < len(text):
+			if nextChar == text[i+1]:
+				acc.append(1)
+			else:
+				acc.append(0)
 	print acc
 	print np.mean(acc)
 
