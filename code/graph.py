@@ -1,12 +1,13 @@
 import matplotlib.pyplot as plt
 
-fileDir = "../hidden_3_lr_0.001_clip_100_steps_128/batchLossFile.txt"
+path = "../hidden_1_limericks/"
+fileDir = path + "/batchLossFile.txt"
 
 with open(fileDir,'r') as g:
 	text = g.readlines()
 
-plt.plot(range(len(text)),text,label = "hidden_3_lr_0.001_clip_100_steps_128")
+plt.plot(range(len(text)),text,label = "Batch Loss")
 plt.ylabel("loss")
 plt.xlabel("batch")
 plt.legend()
-plt.savefig("../hidden_3_lr_0.001_clip_100_steps_128/batchLoss.png", dpi = 500)
+plt.savefig(path + "batchLoss.png", dpi = 500)

@@ -1,4 +1,5 @@
 import pickle
+
 with open("../data/limericks.txt", "r") as myfile:
 	    text=myfile.read()
 text = text[:1500000]
