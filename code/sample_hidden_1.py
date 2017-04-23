@@ -117,15 +117,16 @@ with tf.Session() as sess:
 	cPrevSess = np.zeros(shape = [nHiddenUnits,1])
 
 	## loop to warm up the model for first 100 characters from the testing set##
+	'''
 	for t in text[:100]:
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : ch, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
-	
+	'''
 	## code to predict 1000 characters after warm up##	
 	predictedChar = []
 	startChar = np.zeros(shape = [1,nInputs])
-	startChar[0,uniqueCharToInt[text[100]]] = 1
+	startChar[0,uniqueCharToInt[text[0]]] = 1
 
 	for i in range(1000):
 		

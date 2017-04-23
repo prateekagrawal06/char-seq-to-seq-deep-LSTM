@@ -23,7 +23,7 @@ print unique_char
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
-lr = .0001
+lr = .001
 nSteps = 128
 clipValue = 500
 path = "../hidden_1_limericks/"
