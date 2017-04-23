@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/limericksShort.txt",'r') as pd:
+with open("../data/limericksVeryShort.txt",'r') as pd:
 	text = pd.read()
 with open("../data/uniqueChar.pickle",'r') as uc:
 	unique_char = pickle.load(uc)
@@ -16,9 +16,7 @@ with open("../data/intToUniqueChar.pickle",'r') as uc2:
 print len(text)
 
 print "No. of unique characters: ", len(unique_char)
-print type(uniqueCharToInt)
-print type(intToUniqueChar)
-print type(unique_char)
+
 
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
@@ -146,20 +144,22 @@ with tf.Session() as sess:
 		if (nSteps*(1 + i) + 1) <= len(text):
 			text_x = text[(i*nSteps) : (nSteps*(1 + i))]
 			text_y = text[(i*nSteps + 1) : (nSteps*(1 + i) + 1)]
+			#print text_x
+			#print text_y
 			batch_x = []
 			for s in text_x:
 				a = np.zeros(shape=[len(unique_char)])
 				a[uniqueCharToInt[s]] = 1
 				batch_x.append(a)
 			batch_x = np.array(batch_x)
-
+			#print batch_x.shape
 			batch_y = []
 			for s in text_y:
 				a = np.zeros(shape=[len(unique_char)])
 				a[uniqueCharToInt[s]] = 1
 				batch_y.append(a)
 			batch_y = np.array(batch_y)
-
+			#print batch_y.shape
 			_, batch_loss, cPrevSess, hPrevSess =  sess.run([train,loss,cPrevBatch,hPrevBatch],{x : batch_x, y : batch_y, cPrev1 : cPrevSess, hPrev1 : hPrevSess})			
 			print "loss : ", batch_loss
 			batchLossFile.write("%s\n" % batch_loss)

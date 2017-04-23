@@ -13,9 +13,9 @@ with open("../data/intToUniqueChar.pickle",'r') as uc2:
 
 
 print "No. of unique characters: ", len(unique_char)
-print type(uniqueCharToInt)
-print type(intToUniqueChar)
-print type(unique_char)
+print len(uniqueCharToInt)
+print len(intToUniqueChar)
+print len(unique_char)
 
 nSteps = 1
 nInputs = len(unique_char)
@@ -106,13 +106,17 @@ results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	saver.restore(sess,path + "model_checkpoint/save_net.ckpt")
-	print "Model Restored"
 	hPrevSess = np.zeros(shape = [nHiddenUnits,1])
 	cPrevSess = np.zeros(shape = [nHiddenUnits,1])
+	saver.restore(sess,path + "model_checkpoint/save_net.ckpt")
+	print "Model Restored"
+	print sess.run(weights['input'])
+	
+	'''
 
 	## loop to warm up the model for first 100 characters from the testing set##
-	'''
+
+	
 	for t in text[:100]:
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
@@ -121,8 +125,9 @@ with tf.Session() as sess:
 	## code to predict 1000 characters after warm up##	
 	predictedChar = []
 	startChar = np.zeros(shape = [1,nInputs])
-	startChar[0,40] = 1
-	print startChar
+	startChar[0,6] = 1
+	predictedChar.append(intToUniqueChar[6])
+	
 	for i in range(1000):
 		
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : startChar, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
@@ -155,7 +160,7 @@ with tf.Session() as sess:
 	print acc
 	print np.mean(acc)
 
-'''
+	'''
 
 
 

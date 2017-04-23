@@ -1,8 +1,8 @@
 import pickle
 
-with open("../data/limericks.txt", "r") as myfile:
+with open("../data/limericksVeryShort.txt", "r") as myfile:
 	    text=myfile.read()
-text = text[:1500000]
+#text = text[:10000]
 #textTrain = text[:-10000]
 #textTest = text[-10000:]
 unique_char = set(text)
@@ -17,8 +17,8 @@ print unique_char
 print uniqueCharToInt
 print intToUniqueChar
 
-with open("../data/limericksShort.txt",'w') as pd:
-	pd.write(text)
+#with open("../data/limericksVeryShort.txt",'w') as pd:
+	#pd.write(text[:10000])
 
 #with open("../data/processedDataTrain.pickle",'w') as pd:
 	#pickle.dump(textTrain,pd)
