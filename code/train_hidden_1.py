@@ -2,9 +2,8 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/processedDataTrain.pickle",'r') as pd:
-	text = pickle.load(pd)
-
+with open("../data/limericksShort.txt",'r') as pd:
+	text = pd.read()
 with open("../data/uniqueChar.pickle",'r') as uc:
 	unique_char = pickle.load(uc)
 
@@ -15,17 +14,18 @@ with open("../data/intToUniqueChar.pickle",'r') as uc2:
 	intToUniqueChar = pickle.load(uc2)
 
 print len(text)
+
 print "No. of unique characters: ", len(unique_char)
-print uniqueCharToInt
-print intToUniqueChar
-print unique_char
+print type(uniqueCharToInt)
+print type(intToUniqueChar)
+print type(unique_char)
 
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
-nSteps = 128
-clipValue = 500
+nSteps = 64
+clipValue = 100
 path = "../hidden_1_limericks/"
 
 print "learning rate : ", lr
@@ -169,8 +169,8 @@ with tf.Session() as sess:
 
 			if j % 100 == 0 :
 				save_path = saver.save(sess, path + "model_checkpoint/save_net.ckpt")
-				
 				print "model saved"
+				print sess.run(weights['input'])
 
 
 		else:

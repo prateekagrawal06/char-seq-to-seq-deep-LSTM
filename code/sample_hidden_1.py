@@ -2,10 +2,6 @@ import tensorflow as tf
 import numpy as np 
 import pickle
 
-
-with open("../data/processedDataTest.pickle",'r') as pd:
-	text = pickle.load(pd)
-
 with open("../data/uniqueChar.pickle",'r') as uc:
 	unique_char = pickle.load(uc)
 
@@ -15,11 +11,11 @@ with open("../data/uniqueCharToInt.pickle",'r') as uc1:
 with open("../data/intToUniqueChar.pickle",'r') as uc2:
 	intToUniqueChar = pickle.load(uc2)
 
-print len(text)
+
 print "No. of unique characters: ", len(unique_char)
-print uniqueCharToInt
-print intToUniqueChar
-print unique_char
+print type(uniqueCharToInt)
+print type(intToUniqueChar)
+print type(unique_char)
 
 nSteps = 1
 nInputs = len(unique_char)
@@ -34,14 +30,14 @@ cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 weights = {
     # (nInputs, nHiddenUnit1)
-    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn') * 0.1,
+    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn'),
 
-    'i' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi') * 0.1,
-    'f' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf') * 0.1,
-    'o' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso') * 0.1,
-    'g' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg') * 0.1,
+    'i' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi'),
+    'f' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf'),
+    'o' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso'),
+    'g' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg'),
     # (nHiddenUnits1, nOutputs)
-    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut') * 0.1
+    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut')
 }
 biases = {
     # (nHiddenUnits1, )
@@ -55,7 +51,6 @@ biases = {
     # (nOutputs, )
     'output': tf.Variable(tf.constant(0.0, shape=[nOutputs, ]), name = 'biasesOut')
 }
-
 
 
 def cell(x,cPrev,hPrev):
@@ -126,8 +121,8 @@ with tf.Session() as sess:
 	## code to predict 1000 characters after warm up##	
 	predictedChar = []
 	startChar = np.zeros(shape = [1,nInputs])
-	startChar[0,uniqueCharToInt[text[0]]] = 1
-
+	startChar[0,40] = 1
+	print startChar
 	for i in range(1000):
 		
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : startChar, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
@@ -138,7 +133,7 @@ with tf.Session() as sess:
 		startChar[0,nextCharIndex] = 1		
 	print "text sampled"
 	print "".join(predictedChar)
-
+	'''
 	## evaluate the model for all the testing set characters
 
 	hPrevSess = np.zeros(shape = [nHiddenUnits,1])
@@ -160,7 +155,7 @@ with tf.Session() as sess:
 	print acc
 	print np.mean(acc)
 
-
+'''
 
 
 
