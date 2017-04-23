@@ -131,6 +131,7 @@ with tf.Session() as sess:
 	for i in range(1000):
 		
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : startChar, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
+		print nextCharProb.ravel()
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
 		predictedChar.append(nextChar)		

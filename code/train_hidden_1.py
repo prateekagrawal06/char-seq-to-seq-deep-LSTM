@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/limericksVeryShort.txt",'r') as pd:
+with open("../data/limericksShort.txt",'r') as pd:
 	text = pd.read()
 with open("../data/uniqueChar.pickle",'r') as uc:
 	unique_char = pickle.load(uc)

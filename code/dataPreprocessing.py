@@ -1,6 +1,6 @@
 import pickle
 
-with open("../data/limericksVeryShort.txt", "r") as myfile:
+with open("../data/limericksShort.txt", "r") as myfile:
 	    text=myfile.read()
 #text = text[:10000]
 #textTrain = text[:-10000]
