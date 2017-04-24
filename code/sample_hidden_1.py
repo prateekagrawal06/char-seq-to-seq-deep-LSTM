@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np 
 import pickle
 
-with open("../data/input_shak.txt",'r') as f:
+with open("../data/limericksShort.txt",'r') as f:
 	text = f.read()
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -24,7 +24,7 @@ nSteps = 1
 nInputs = len(unique_char)
 nHiddenUnits = 512
 nOutputs = len(unique_char)
-path = "../hidden_1_shak/"
+path = "../hidden_1_limericks/"
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 
