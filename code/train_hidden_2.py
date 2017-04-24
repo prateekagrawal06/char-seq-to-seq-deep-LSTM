@@ -2,8 +2,8 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/processedDataTrain.pickle",'r') as pd:
-	text = pickle.load(pd)
+with open("../data/limericksShort.txt",'r') as pd:
+	text = pd.read()
 
 with open("../data/uniqueChar.pickle",'r') as uc:
 	unique_char = pickle.load(uc)
@@ -25,8 +25,8 @@ nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
-nSteps = 128
-clipValue = "NA"
+nSteps = 25
+clipValue = 100
 path = "../hidden_2_limericks/"
 
 
@@ -42,23 +42,23 @@ cPrev2 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 weights = {
     # (nInputs, nHiddenUnit1)
-    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn')*0.1,
+    'input': tf.Variable(tf.random_normal([nInputs, nHiddenUnits]), name = 'weightsIn'),
 
-    'i1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi1')*0.1,
-    'f1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf1')*0.1,
-    'o1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso1')*0.1,
-    'g1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg1')*0.1,
+    'i1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi1'),
+    'f1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf1'),
+    'o1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso1'),
+    'g1' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg1'),
     # (nHiddenUnits1, nOutputs)
 
-    'hh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshh')*0.1,
+    'hh' : tf.Variable(tf.random_normal([nHiddenUnits,nHiddenUnits]), name = 'weightshh'),
 
-    'i2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi2')*0.1,
-    'f2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf2')*0.1,
-    'o2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso2')*0.1,
-    'g2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg2')*0.1,
+    'i2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]), name = 'weightsi2'),
+    'f2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsf2'),
+    'o2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightso2'),
+    'g2' : tf.Variable(tf.random_normal([nHiddenUnits,(2 * nHiddenUnits)]),name = 'weightsg2'),
 
     # (nHiddenUnits1, nOutputs)
-    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut')*0.1
+    'output': tf.Variable(tf.random_normal([nHiddenUnits, nOutputs]),name = 'weightsOut')
 }
 biases = {
     # (nHiddenUnits1, )
@@ -145,8 +145,8 @@ loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, 
 
 optimizer = tf.train.AdamOptimizer(lr)
 dVar = optimizer.compute_gradients(loss)
-#dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
-train = optimizer.apply_gradients(dVar)
+dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
+train = optimizer.apply_gradients(dVarClipped)
 
 
 saver = tf.train.Saver()
