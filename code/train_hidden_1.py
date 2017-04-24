@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/limericksShort.txt",'r') as pd:
+with open("../data/input_shak.txt",'r') as pd:
 	text = pd.read()
 with open("../data/uniqueChar.pickle",'r') as uc:
 	unique_char = pickle.load(uc)
@@ -22,9 +22,9 @@ nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
-nSteps = 64
+nSteps = 25
 clipValue = 100
-path = "../hidden_1_limericks/"
+path = "../hidden_1_shak/"
 
 print "learning rate : ", lr
 print "no of sequesnce : " , nSteps
@@ -170,7 +170,7 @@ with tf.Session() as sess:
 			if j % 100 == 0 :
 				save_path = saver.save(sess, path + "model_checkpoint/save_net.ckpt")
 				print "model saved"
-				print sess.run(weights['input'])
+				#print sess.run(weights['input'])
 
 
 		else:

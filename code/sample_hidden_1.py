@@ -2,6 +2,9 @@ import tensorflow as tf
 import numpy as np 
 import pickle
 
+with open("../data/input_shak.txt",'r') as f:
+	text = f.read()
+
 with open("../data/uniqueChar.pickle",'r') as uc:
 	unique_char = pickle.load(uc)
 
@@ -21,7 +24,7 @@ nSteps = 1
 nInputs = len(unique_char)
 nHiddenUnits = 512
 nOutputs = len(unique_char)
-path = "../hidden_1_limericks/"
+path = "../hidden_1_shak/"
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 
@@ -99,7 +102,7 @@ x = tf.reshape(x,[-1,nInputs])
 x_in = tf.add(tf.matmul(x,weights['input']),biases['input'])
 
 hStates, cPrevBatch, hPrevBatch = unroll_LSTM(x_in,cPrev1,hPrev1)
-
+uniqueCharToInt
 results = tf.matmul(hStates, weights['output']) + biases['output']
 results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
@@ -112,26 +115,26 @@ with tf.Session() as sess:
 	print "Model Restored"
 	print sess.run(weights['input'])
 	
-	'''
+	
 
 	## loop to warm up the model for first 100 characters from the testing set##
-
 	
+	print "warming up the model"
 	for t in text[:100]:
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : ch, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
-	'''
+
 	## code to predict 1000 characters after warm up##	
 	predictedChar = []
 	startChar = np.zeros(shape = [1,nInputs])
-	startChar[0,6] = 1
+	startChar[0,uniqueCharToInt[text[100]]] = 1
 	predictedChar.append(intToUniqueChar[6])
 	
 	for i in range(1000):
 		
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : startChar, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
-		print nextCharProb.ravel()
+		#print nextCharProb.ravel()
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
 		predictedChar.append(nextChar)		
@@ -139,7 +142,7 @@ with tf.Session() as sess:
 		startChar[0,nextCharIndex] = 1		
 	print "text sampled"
 	print "".join(predictedChar)
-	'''
+	
 	## evaluate the model for all the testing set characters
 
 	hPrevSess = np.zeros(shape = [nHiddenUnits,1])
@@ -147,7 +150,7 @@ with tf.Session() as sess:
 
 	acc = []
 
-	for i,t in enumerate(text):
+	for i,t in enumerate(text[:10000]):
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
 		nextCharProb, cPrevSess, hPrevSess = sess.run([results,cPrevBatch,hPrevBatch],{ x : ch, cPrev1 : cPrevSess, hPrev1 : hPrevSess})
@@ -161,7 +164,7 @@ with tf.Session() as sess:
 	print acc
 	print np.mean(acc)
 
-	'''
+	
 
 
 
