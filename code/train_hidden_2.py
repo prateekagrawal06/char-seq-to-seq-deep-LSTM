@@ -199,7 +199,7 @@ with tf.Session() as sess:
 			epochLossFile.write("%s\n" % epoch_loss)
 			i = 0
 			epoch_loss = 0
-			print sess.run(weights['input'])
+			
 
 
 
