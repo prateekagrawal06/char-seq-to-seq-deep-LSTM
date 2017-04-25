@@ -4,7 +4,7 @@ import pickle
 
 
 with open("../data/input_shak.txt",'r') as pd:
-	text = pickle.load(pd)
+	text = pd.read()
 
 with open("../data/uniqueChar.pickle",'r') as uc:
 	unique_char = pickle.load(uc)

@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 
 with open("../data/input_shak.txt",'r') as pd:
-	text = pickle.load(pd)
+	text = pd.read()
 
 with open("../data/uniqueChar.pickle",'r') as uc:
 	unique_char = pickle.load(uc)
@@ -211,7 +211,7 @@ with tf.Session() as sess:
 				batch_y.append(a)
 			batch_y = np.array(batch_y)
 
-			_, batch_loss, cPrev3Sess, hPrev3Sess, cPrev2Sess, hPrev2Sess,cPrev1Sess, hPrev1Sess =  sess.run([train,loss,cPrev3Batch,hPrev3Batch,cPrev2Batch,hPrev2BatchcPrev1Batch,hPrev1Batch],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess,cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess,cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess})
+			_, batch_loss, cPrev3Sess, hPrev3Sess, cPrev2Sess, hPrev2Sess,cPrev1Sess, hPrev1Sess =  sess.run([train,loss,cPrev3Batch,hPrev3Batch,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess,cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess,cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess})
 			cPrev1Sess = cPrev3Sess
 			hPrev1Sess = hPrev3Sess			
 			print "loss : ", batch_loss
