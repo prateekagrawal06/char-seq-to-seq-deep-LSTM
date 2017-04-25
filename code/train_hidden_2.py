@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/limericksShort.txt",'r') as pd:
+with open("../data/input_shak.txt",'r') as pd:
 	text = pd.read()
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -27,7 +27,7 @@ nHiddenUnits = 512
 lr = .001
 nSteps = 25
 clipValue = 100
-path = "../hidden_2_limericks/"
+path = "../hidden_2_shak/"
 
 
 x = tf.placeholder(tf.float32,[None,nInputs])
@@ -199,6 +199,7 @@ with tf.Session() as sess:
 			epochLossFile.write("%s\n" % epoch_loss)
 			i = 0
 			epoch_loss = 0
+			print sess.run(weights['input'])
 
 
 

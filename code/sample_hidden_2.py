@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 
 
-with open("../data/limericksShort.txt",'r') as pd:
+with open("../data/input_shak.txt",'r') as pd:
 	text = pd.read()
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -26,7 +26,7 @@ nSteps = 1
 nInputs = len(unique_char)
 nHiddenUnits = 512
 nOutputs = len(unique_char)
-path = "../hidden_2_limericks/"
+path = "../hidden_2_shak/"
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 
@@ -177,7 +177,7 @@ with tf.Session() as sess:
 
 	acc = []
 
-	for i,t in enumerate(text[:10000]):
+	for i,t in enumerate(text[:1000]):
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
 		nextCharProb,cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess = sess.run([results,cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch],{ x : startChar, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess, cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess})
