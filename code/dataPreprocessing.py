@@ -2,7 +2,7 @@ import pickle
 
 with open("../data/input_shak.txt", "r") as myfile:
 	    text=myfile.read()
-#text = text[:10000]
+#text = text[:200000]
 #textTrain = text[:-10000]
 #textTest = text[-10000:]
 unique_char = set(text)
@@ -17,8 +17,8 @@ print unique_char
 print uniqueCharToInt
 print intToUniqueChar
 
-#with open("../data/limericksVeryShort.txt",'w') as pd:
-	#pd.write(text[:10000])
+with open("../data/input_shak_short.txt",'w') as pd:
+	pd.write(text[:200000 ])
 
 #with open("../data/processedDataTrain.pickle",'w') as pd:
 	#pickle.dump(textTrain,pd)

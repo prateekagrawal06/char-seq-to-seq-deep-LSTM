@@ -1,6 +1,7 @@
 import tensorflow as tf
-import numpy as np
+import numpy as np 
 import pickle
+
 
 with open("../data/input_shak_short.txt",'r') as pd:
 	text = pd.read()
@@ -23,19 +24,10 @@ print unique_char
 nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
-lr = .001
-nSteps = 128
-clipValue = 100
+nSteps = 1
 path = "../hidden_3_shak_short_V2/"
 
-
-print "learning rate : ", lr
-print "no of sequence : " , nSteps
-print "clipping value : " , clipValue
-
 x = tf.placeholder(tf.float32,[None,nInputs])
-y = tf.placeholder(tf.float32,[None,nOutputs])
-
 
 hPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
@@ -45,7 +37,6 @@ cPrev1 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 
 #hPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
 #cPrev3 = tf.placeholder(tf.float32,[nHiddenUnits,1])
-
 
 weights = {
     # (nInputs, nHiddenUnit1)
@@ -78,10 +69,10 @@ biases = {
     # (nHiddenUnits1, )
     'input': tf.Variable(tf.constant(0.0, shape=[nHiddenUnits, ]),name = 'biasesIn'),
 
-    'i1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesi1'),
-    'f1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesf1'),
-    'o1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseso1'),
-    'g1' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biasesg1'),
+    'i1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesi1'),
+    'f1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesf1'),
+    'o1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biaseso1'),
+    'g1' : tf.Variable(tf.constant(0.00,shape=[nHiddenUnits, ]), name = 'biasesg1'),
 
     'hh' : tf.Variable(tf.constant(0.0,shape=[nHiddenUnits, ]), name = 'biaseshh'),
 
@@ -145,7 +136,8 @@ def unroll_LSTM(x, cPrev, hPrev,layer):
 
 		cPrev = cCurrent
 		hPrev = hCurrent
-
+		
+		
 	return tf.reshape(hStates,[nSteps,nHiddenUnits]),tf.reshape(cPrev,[nHiddenUnits,1]),tf.reshape(hPrev,[nHiddenUnits,1])
 
 x = tf.reshape(x,[-1,nInputs])
@@ -156,80 +148,78 @@ hStates1,cPrev1Batch,hPrev1Batch = unroll_LSTM(inputHidden1, cPrev1, hPrev1,1)
 
 inputHidden2 = tf.matmul(hStates1, weights['hh']) + biases['hh']
 
-hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev1Batch, hPrev1Batch, 2)
+hStates2,cPrev2Batch,hPrev2Batch = unroll_LSTM(inputHidden2, cPrev1Batch,hPrev1Batch,2)
 
 inputHidden3 = tf.matmul(hStates2, weights['hhh']) + biases['hhh']
 
-hStates3,cPrev3Batch,hPrev3Batch = unroll_LSTM(inputHidden3, cPrev2Batch, hPrev2Batch, 3)
+hStates3,cPrev3Batch,hPrev3Batch = unroll_LSTM(inputHidden3,cPrev2Batch,hPrev2Batch,3)
 
 results = tf.matmul(hStates3, weights['output']) + biases['output']
-results = tf.reshape(results,[nSteps,nOutputs])
+results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, labels = y))
-
-
-optimizer = tf.train.AdamOptimizer(lr)
-dVar = optimizer.compute_gradients(loss)
-dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
-train = optimizer.apply_gradients(dVarClipped)
 
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-	init = tf.global_variables_initializer()
-	sess.run(init)
+	saver.restore(sess,path + "model_checkpoint/save_net.ckpt")
+	print "Model Restored"
 	cPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
 	hPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
 	#cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
 	#hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
 	#cPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
 	#hPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
-	i = 0
-	j = 0
-	epoch_loss = 0
-	batchLossFile = open(path + "batchLossFile.txt","w")
-	epochLossFile = open(path + "epochLossFile.txt","w")
-	while True:
-		print "Iteration : ", j
 
-		if (nSteps*(1 + i) + 1) <= len(text):
-
-			text_x = text[(i*nSteps) : (nSteps*(1 + i))]
-			text_y = text[(i*nSteps + 1) : (nSteps*(1 + i) + 1)]
-
-			batch_x = []
-			for s in text_x:
-				a = np.zeros(shape=[len(unique_char)])
-				a[uniqueCharToInt[s]] = 1
-				batch_x.append(a)
-			batch_x = np.array(batch_x)
-
-			batch_y = []
-			for s in text_y:
-				a = np.zeros(shape=[len(unique_char)])
-				a[uniqueCharToInt[s]] = 1
-				batch_y.append(a)
-			batch_y = np.array(batch_y)
-
-			_, batch_loss, cPrev3Sess, hPrev3Sess ''',cPrev2Sess, hPrev2Sess,cPrev1Sess, hPrev1Sess''' =  sess.run([train,loss,cPrev3Batch,hPrev3Batch''',cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch'''],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess''',cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess,cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess'''})
-			cPrev1Sess = cPrev3Batch
-			hPrev1Sess = hPrev3Batch
-			print "loss : ", batch_loss
-			batchLossFile.write("%s\n" % batch_loss)
-			epoch_loss += batch_loss
-			j += 1
-			i += 1
-
-			if j % 100 == 0 :
-				save_path = saver.save(sess, path + "model_checkpoint/save_net.ckpt")
-				print "model saved"
+	for t in text[:100]:
+		ch = np.zeros(shape = [1,nInputs])
+		ch[0,uniqueCharToInt[t]] = 1
+		nextCharProb, cPrev3Sess, hPrev3Sess ''', cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess''' = sess.run([results, cPrev3Batch, hPrev3Batch''', cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch'''],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess''', cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess'''})
+		cPrev1Batch = cPrev3Batch
+		hPrev1Batch = hPrev3Batch
 
 
-		else:
-			print "One epoch done"
-			print "epoch loss : ", epoch_loss
-			epochLossFile.write("%s\n" % epoch_loss)
-			i = 0
-			epoch_loss = 0
+	predictedChar = []
+	startChar = np.zeros(shape = [1,nInputs])
+	startChar[0,uniqueCharToInt[text[100]]] = 1
+
+	for i in range(1000):
+		nextCharProb, cPrev3Sess, hPrev3Sess ''', cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess''' = sess.run([results, cPrev3Batch, hPrev3Batch''', cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch'''],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess''', cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess'''})
+		cPrev1Batch = cPrev3Batch
+		hPrev1Batch = hPrev3Batch
+		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
+		nextChar = intToUniqueChar[nextCharIndex]
+		predictedChar.append(nextChar)
+		startChar = np.zeros(shape = [1,nInputs])
+		startChar[0,nextCharIndex] = 1
+		
+	print "text sampled"
+	print "".join(predictedChar)
+
+	## evaluate the model for all the testing set characters
+
+	cPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
+	hPrev1Sess = np.zeros(shape = [nHiddenUnits,1])
+	#cPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	#hPrev2Sess = np.zeros(shape = [nHiddenUnits,1])
+	#cPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
+	#hPrev3Sess = np.zeros(shape = [nHiddenUnits,1])
+
+	acc = []
+
+	for i,t in enumerate(text[:1000]):
+		ch = np.zeros(shape = [1,nInputs])
+		ch[0,uniqueCharToInt[t]] = 1
+		nextCharProb, cPrev3Sess, hPrev3Sess ''', cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess''' = sess.run([results, cPrev3Batch, hPrev3Batch''', cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch'''],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess''', cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess'''})
+		cPrev1Batch = cPrev3Batch
+		hPrev1Batch = hPrev3Batch
+		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
+		nextChar = intToUniqueChar[nextCharIndex]
+		if (i+1) < len(text):
+			if nextChar == text[i+1]:
+				acc.append(1)
+			else:
+				acc.append(0)
+	print acc
+	print np.mean(acc)
 
 
