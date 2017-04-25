@@ -102,7 +102,7 @@ x = tf.reshape(x,[-1,nInputs])
 x_in = tf.add(tf.matmul(x,weights['input']),biases['input'])
 
 hStates, cPrevBatch, hPrevBatch = unroll_LSTM(x_in,cPrev1,hPrev1)
-uniqueCharToInt
+
 results = tf.matmul(hStates, weights['output']) + biases['output']
 results = tf.nn.softmax(tf.reshape(results,[nSteps,nOutputs]))
 

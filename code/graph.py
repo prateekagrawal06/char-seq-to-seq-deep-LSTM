@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-path = "../hidden_1_limericks/"
+path = "../hidden_2_limericks/"
 fileDir = path + "/batchLossFile.txt"
 
 with open(fileDir,'r') as g:

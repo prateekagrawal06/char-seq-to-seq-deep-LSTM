@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-with open("../data/processedDataTrain.pickle",'r') as pd:
+with open("../data/input_shak.txt",'r') as pd:
 	text = pickle.load(pd)
 
 with open("../data/uniqueChar.pickle",'r') as uc:
@@ -24,9 +24,9 @@ nOutputs = len(unique_char)
 nInputs = len(unique_char)
 nHiddenUnits = 512
 lr = .001
-nSteps = 128
-clipValue = "NA"
-path = "../hidden_3_limericks/"
+nSteps = 25
+clipValue = 100
+path = "../hidden_3_shak/"
 
 
 print "learning rate : ", lr
@@ -170,8 +170,8 @@ loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = results, 
 
 optimizer = tf.train.AdamOptimizer(lr)
 dVar = optimizer.compute_gradients(loss)
-#dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
-train = optimizer.apply_gradients(dVar)
+dVarClipped = [(tf.clip_by_value(grad, -clipValue,clipValue), var) for grad, var in dVar]
+train = optimizer.apply_gradients(dVarClipped)
 
 
 saver = tf.train.Saver()
