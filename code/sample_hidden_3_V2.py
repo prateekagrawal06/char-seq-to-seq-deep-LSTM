@@ -174,8 +174,8 @@ with tf.Session() as sess:
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
 		nextCharProb, cPrev3Sess, hPrev3Sess = sess.run([results, cPrev3Batch, hPrev3Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
-		cPrev1Batch = cPrev3Batch
-		hPrev1Batch = hPrev3Batch
+		cPrev1Sess = cPrev3Sess
+		hPrev1Sess = hPrev3Sess
 
 
 	predictedChar = []
@@ -184,8 +184,8 @@ with tf.Session() as sess:
 
 	for i in range(1000):
 		nextCharProb, cPrev3Sess, hPrev3Sess = sess.run([results, cPrev3Batch, hPrev3Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
-		cPrev1Batch = cPrev3Batch
-		hPrev1Batch = hPrev3Batch
+		cPrev1Sess = cPrev3Sess
+		hPrev1Sess = hPrev3Sess
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
 		predictedChar.append(nextChar)
@@ -210,8 +210,8 @@ with tf.Session() as sess:
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
 		nextCharProb, cPrev3Sess, hPrev3Sess = sess.run([results, cPrev3Batch, hPrev3Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
-		cPrev1Batch = cPrev3Batch
-		hPrev1Batch = hPrev3Batch
+		cPrev1Sess = cPrev3Sess
+		hPrev1Sess = hPrev3Sess
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
 		nextChar = intToUniqueChar[nextCharIndex]
 		if (i+1) < len(text):
