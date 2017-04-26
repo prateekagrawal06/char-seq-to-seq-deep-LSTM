@@ -211,7 +211,7 @@ with tf.Session() as sess:
 				batch_y.append(a)
 			batch_y = np.array(batch_y)
 
-			_, batch_loss, cPrev3Sess, hPrev3Sess ''',cPrev2Sess, hPrev2Sess,cPrev1Sess, hPrev1Sess''' =  sess.run([train,loss,cPrev3Batch,hPrev3Batch''',cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch'''],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess''',cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess,cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess'''})
+			_, batch_loss, cPrev3Sess, hPrev3Sess = sess.run([train,loss,cPrev3Batch,hPrev3Batch],{x : batch_x, y : batch_y, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
 			cPrev1Sess = cPrev3Batch
 			hPrev1Sess = hPrev3Batch
 			print "loss : ", batch_loss

@@ -173,7 +173,7 @@ with tf.Session() as sess:
 	for t in text[:100]:
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
-		nextCharProb, cPrev3Sess, hPrev3Sess ''', cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess''' = sess.run([results, cPrev3Batch, hPrev3Batch''', cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch'''],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess''', cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess'''})
+		nextCharProb, cPrev3Sess, hPrev3Sess = sess.run([results, cPrev3Batch, hPrev3Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
 		cPrev1Batch = cPrev3Batch
 		hPrev1Batch = hPrev3Batch
 
@@ -183,7 +183,7 @@ with tf.Session() as sess:
 	startChar[0,uniqueCharToInt[text[100]]] = 1
 
 	for i in range(1000):
-		nextCharProb, cPrev3Sess, hPrev3Sess ''', cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess''' = sess.run([results, cPrev3Batch, hPrev3Batch''', cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch'''],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess''', cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess'''})
+		nextCharProb, cPrev3Sess, hPrev3Sess = sess.run([results, cPrev3Batch, hPrev3Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
 		cPrev1Batch = cPrev3Batch
 		hPrev1Batch = hPrev3Batch
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
@@ -209,7 +209,7 @@ with tf.Session() as sess:
 	for i,t in enumerate(text[:1000]):
 		ch = np.zeros(shape = [1,nInputs])
 		ch[0,uniqueCharToInt[t]] = 1
-		nextCharProb, cPrev3Sess, hPrev3Sess ''', cPrev2Sess, hPrev2Sess, cPrev1Sess, hPrev1Sess''' = sess.run([results, cPrev3Batch, hPrev3Batch''', cPrev2Batch,hPrev2Batch,cPrev1Batch,hPrev1Batch'''],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess''', cPrev2 : cPrev2Sess, hPrev2 : hPrev2Sess, cPrev3 : cPrev3Sess, hPrev3 : hPrev3Sess'''})
+		nextCharProb, cPrev3Sess, hPrev3Sess = sess.run([results, cPrev3Batch, hPrev3Batch],{ x : ch, cPrev1 : cPrev1Sess, hPrev1 : hPrev1Sess})
 		cPrev1Batch = cPrev3Batch
 		hPrev1Batch = hPrev3Batch
 		nextCharIndex = np.random.choice(range(nOutputs), p = nextCharProb.ravel())
