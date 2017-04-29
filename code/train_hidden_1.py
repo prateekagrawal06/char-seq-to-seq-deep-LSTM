@@ -4,18 +4,22 @@ import pickle
 
 with open("../data/input_shak.txt",'r') as pd:
 	text = pd.read()
-with open("../data/uniqueChar.pickle",'r') as uc:
+with open("../data/uniqueChar.pickle",'rb') as uc:
 	unique_char = pickle.load(uc)
 
-with open("../data/uniqueCharToInt.pickle",'r') as uc1:
+with open("../data/uniqueCharToInt.pickle",'rb') as uc1:
 	uniqueCharToInt = pickle.load(uc1)
 
-with open("../data/intToUniqueChar.pickle",'r') as uc2:
+with open("../data/intToUniqueChar.pickle",'rb') as uc2:
 	intToUniqueChar = pickle.load(uc2)
+print (text[:200])
 
-print len(text)
+print (len(text))
+print (unique_char)
+print (uniqueCharToInt)
+print (intToUniqueChar)
 
-print "No. of unique characters: ", len(unique_char)
+print ("No. of unique characters: ", len(unique_char))
 
 
 nOutputs = len(unique_char)
@@ -24,12 +28,12 @@ nHiddenUnits = 512
 lr = .001
 nSteps = 25
 clipValue = 100
-path = "../hidden_1_shak/"
+path = "../hidden_1_shaks/"
 
-print "learning rate : ", lr
-print "no of sequesnce : " , nSteps
-print "clipping value : " , clipValue
-print "hidden units : " , nHiddenUnits
+print ("learning rate : ", lr)
+print ("no of sequesnce : " , nSteps)
+print ("clipping value : " , clipValue)
+print ("hidden units : " , nHiddenUnits)
 
 x = tf.placeholder(tf.float32,[None,nInputs])
 y = tf.placeholder(tf.float32,[None,nOutputs])
@@ -140,7 +144,7 @@ with tf.Session() as sess:
 	epochLossFile = open(path + "epochLossFile.txt","w")
 	
 	while True:
-		print "Iteration : ", j
+		print ("Iteration : ", j)
 		if (nSteps*(1 + i) + 1) <= len(text):
 			text_x = text[(i*nSteps) : (nSteps*(1 + i))]
 			text_y = text[(i*nSteps + 1) : (nSteps*(1 + i) + 1)]
@@ -161,7 +165,7 @@ with tf.Session() as sess:
 			batch_y = np.array(batch_y)
 			#print batch_y.shape
 			_, batch_loss, cPrevSess, hPrevSess =  sess.run([train,loss,cPrevBatch,hPrevBatch],{x : batch_x, y : batch_y, cPrev1 : cPrevSess, hPrev1 : hPrevSess})			
-			print "loss : ", batch_loss
+			print ("loss : ", batch_loss)
 			batchLossFile.write("%s\n" % batch_loss)
 			epoch_loss += batch_loss
 			j += 1
@@ -169,13 +173,13 @@ with tf.Session() as sess:
 
 			if j % 100 == 0 :
 				save_path = saver.save(sess, path + "model_checkpoint/save_net.ckpt")
-				print "model saved"
+				print ("model saved")
 				#print sess.run(weights['input'])
 
 
 		else:
-			print "One epoch done"
-			print "epoch loss : ", epoch_loss
+			print ("One epoch done")
+			print ("epoch loss : ", epoch_loss)
 			epochLossFile.write("%s\n" % epoch_loss)
 			i = 0
 			epoch_loss = 0

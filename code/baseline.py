@@ -3,10 +3,11 @@ from collections import Counter
 from collections import defaultdict
 import pickle
 
-with open("../data/processedDataTest.pickle",'r') as pd:
-	testText = pickle.load(pd)
-with open("../data/processedDataTrain.pickle",'r') as pd:
-	trainText = pickle.load(pd)
+with open("../data/input_shak.txt",'r') as pd:
+	text = pd.read()
+
+trainText = text[:-1000]
+testText = text[-1000:]
 
 outerDict = defaultdict(lambda:Counter())
 uniqueChar = ''.join(set(trainText))
@@ -28,11 +29,14 @@ for k,v in wordDict.items():
 ch = testText[0]
 text = []
 text.append(ch)
-for i in range(99):
+for i in range(500):
     ch = np.random.choice(list(wordDict[ch].keys()),p=list(wordDict[ch].values()))
     text.append(ch)
 print "".join(text)
 print len(text)
+
+with open("sampledTextBaseline.txt",'w') as f:
+    f.write("".join(text))
 
 
 acc = []

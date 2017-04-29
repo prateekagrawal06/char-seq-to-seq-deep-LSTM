@@ -142,6 +142,9 @@ with tf.Session() as sess:
 		startChar[0,nextCharIndex] = 1		
 	print "text sampled"
 	print "".join(predictedChar)
+
+	with open("sampledTextHidden1.txt","w") as f:
+		f.write("".join(predictedChar))
 	
 	## evaluate the model for all the testing set characters
 
